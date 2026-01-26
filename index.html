@@ -16,8 +16,8 @@
 </head>
 <body>
 
-<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Fixed Version)</h2>
-<p style="color:#ff6666">Same original variable → same obfuscated name (no duplicates!)</p>
+<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Strings Fixed)</h2>
+<p style="color:#ff6666">Fixed string encoding – safe for all executors • Same var name = same obfuscated name</p>
 
 <textarea id="input" placeholder="Paste your Luau script here..."></textarea>
 
@@ -38,7 +38,7 @@
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   FIXED: Consistent renaming for same-named variables
+//   STRINGS FIXED + CONSISTENT RENAMING
 // ────────────────────────────────────────────────────────────────
 
 function randGibberish(len) {
@@ -55,9 +55,30 @@ function evilName() {
   return name;
 }
 
-function stringRape(str) {
+function safeStringEncode(str) {
   if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
-  return `string.char(${str.split("").map(c => c.charCodeAt(0)).join(",")})`;
+
+  // Unescape the string content first
+  let clean = str.replace(/\\(.)/g, (_, c) => {
+    if (c === 'n') return '\n';
+    if (c === 't') return '\t';
+    if (c === 'r') return '\r';
+    if (c === '"') return '"';
+    if (c === '\\') return '\\';
+    return c; // fallback
+  });
+
+  // If string is too long → just return normal to avoid executor crashes
+  if (clean.length > 200) {
+    return `"${str}"`; // fallback to original (with escapes)
+  }
+
+  // Safe string.char
+  const codes = [];
+  for (let i = 0; i < clean.length; i++) {
+    codes.push(clean.charCodeAt(i));
+  }
+  return `string.char(${codes.join(",")})`;
 }
 
 function numberFuck(n) {
@@ -90,10 +111,10 @@ function fuckThisCode() {
   let code = document.getElementById("input").value.trim();
   if (!code) return;
 
-  const vars = {}; // original name → consistent obfuscated name
+  const vars = {}; // original → consistent obfuscated
 
-  // Step 1: Collect ALL unique user-defined identifiers
-  code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match, name) => {
+  // Step 1: Collect unique user variables
+  code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (_, name) => {
     if (document.getElementById("nameChaos").checked) {
       const skip = [
         'and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or',
@@ -102,28 +123,21 @@ function fuckThisCode() {
         'math','string','table','pairs','ipairs','next','print','warn','error','pcall','xpcall','assert'
       ];
       if (!skip.includes(name)) {
-        if (!vars[name]) {
-          vars[name] = evilName(); // assign ONE consistent evil name per original name
-        }
+        if (!vars[name]) vars[name] = evilName();
       }
     }
-    return match;
+    return _;
   });
 
-  // Step 2: Replace ALL occurrences with their consistent obfuscated name
-  for (const original in vars) {
-    const regex = new RegExp(`\\b${original}\\b`, 'g');
-    code = code.replace(regex, vars[original]);
+  // Step 2: Replace consistently
+  for (const orig in vars) {
+    const regex = new RegExp(`\\b${orig}\\b`, 'g');
+    code = code.replace(regex, vars[orig]);
   }
 
-  // Step 3: Encode strings (safe method only)
+  // Step 3: Encode strings – FIXED
   code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_, content) => {
-    try {
-      const clean = content.replace(/\\(.)/g, (_, c) => ({n:'\n',t:'\t'})[c] || c);
-      return stringRape(clean);
-    } catch {
-      return stringRape(content);
-    }
+    return safeStringEncode(content);
   });
 
   // Step 4: Encode numbers
@@ -132,10 +146,10 @@ function fuckThisCode() {
     return numberFuck(num);
   });
 
-  // Step 5: Add light chaos
+  // Step 5: Chaos
   code = ghostVars() + junkApocalypse() + code;
 
-  // Step 6: Scary header
+  // Header
   const header = `-- FUCK YOUR DECOMPILER 😭\n-- Obfuscated using https://zxkuhl.github.io/Test-for-website/\n\n`;
   code = header + code;
 
@@ -146,7 +160,7 @@ function copyToClipboard() {
   const out = document.getElementById("output");
   out.select();
   document.execCommand("copy");
-  alert("Copied! Now go fuck some decompilers 😈");
+  alert("Copied! Should work perfectly now.");
 }
 </script>
 </body>
