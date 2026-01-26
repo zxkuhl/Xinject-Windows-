@@ -16,29 +16,29 @@
 </head>
 <body>
 
-<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Number Strings Only)</h2>
-<p style="color:#ff6666">All strings are now pure number soup → string.char(114,121,55,48,...) style</p>
+<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Pure Number Soup)</h2>
+<p style="color:#ff6666">All strings now look like dev cancer: string.char(114,121,55,48,...)</p>
 
 <textarea id="input" placeholder="Paste your Luau script here..."></textarea>
 
 <div id="options">
-  <label><input type="checkbox" id="encodeStrings" checked> Encode strings as number soup</label>
+  <label><input type="checkbox" id="encodeStrings" checked> Number soup strings (dev style)</label>
   <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
   <label><input type="checkbox" id="junkCode" checked> Light junk code</label>
   <label><input type="checkbox" id="fakeVars" checked> Ghost variables</label>
   <label><input type="checkbox" id="nameChaos" checked> Destroy user variables only</label>
 </div>
 
-<button onclick="fuckThisCode()">OBFUSCATE</button>
+<button onclick="fuckThisCode()">OBFUSCATE LIKE DEVS</button>
 
 <div class="warning">FUCK YOUR DECOMPILER 😭 — Obfuscated using https://zxkuhl.github.io/Test-for-website/</div>
 
-<textarea id="output" readonly placeholder="Obfuscated code..."></textarea>
+<textarea id="output" readonly placeholder="Your dev-tier obfuscated code..."></textarea>
 <button onclick="copyToClipboard()">Copy to Clipboard</button>
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   STRINGS = ONLY NUMBERS (dev style)
+//   PURE NUMBER SOUP STRINGS – DEV STYLE
 // ────────────────────────────────────────────────────────────────
 
 function randGibberish(len) {
@@ -60,7 +60,7 @@ function numberSoup(strContent) {
     return `"${strContent}"`;
   }
 
-  // Properly unescape first
+  // Properly unescape raw string content
   let unescaped = strContent.replace(/\\(.)/g, (_, e) => {
     switch (e) {
       case 'n': return '\n';
@@ -73,13 +73,12 @@ function numberSoup(strContent) {
     }
   });
 
-  // Build pure number soup
   const codes = [];
   for (let i = 0; i < unescaped.length; i++) {
     codes.push(unescaped.charCodeAt(i));
   }
 
-  // If very long → split into multiple string.char + .. for safety
+  // Split long strings into chunks to avoid executor limits
   if (codes.length > 300) {
     const chunks = [];
     for (let i = 0; i < codes.length; i += 200) {
@@ -123,7 +122,7 @@ function fuckThisCode() {
 
   const vars = {};
 
-  // Collect user variables only (protect globals)
+  // Collect only user variables (protect important stuff)
   code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (_, name) => {
     if (document.getElementById("nameChaos").checked) {
       const protected = [
@@ -147,7 +146,7 @@ function fuckThisCode() {
     code = code.replace(regex, vars[orig]);
   }
 
-  // STRINGS → NUMBER SOUP
+  // STRINGS → PURE NUMBER SOUP
   code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match, content) => {
     return numberSoup(content);
   });
@@ -172,7 +171,7 @@ function copyToClipboard() {
   const out = document.getElementById("output");
   out.select();
   document.execCommand("copy");
-  alert("Copied! Pure number soup strings ready.");
+  alert("Copied! Pure dev soup ready 😈");
 }
 </script>
 </body>
