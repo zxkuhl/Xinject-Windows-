@@ -16,8 +16,8 @@
 </head>
 <body>
 
-<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Strings Fixed)</h2>
-<p style="color:#ff6666">Fixed string encoding – safe for all executors • Same var name = same obfuscated name</p>
+<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Keywords & Strings Fixed)</h2>
+<p style="color:#ff6666">No more broken "then" or malformed strings • Safe for executors</p>
 
 <textarea id="input" placeholder="Paste your Luau script here..."></textarea>
 
@@ -38,7 +38,7 @@
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   STRINGS FIXED + CONSISTENT RENAMING
+//   FIXED: Protects keywords like 'then', 'do', 'end' + robust strings
 // ────────────────────────────────────────────────────────────────
 
 function randGibberish(len) {
@@ -58,26 +58,28 @@ function evilName() {
 function safeStringEncode(str) {
   if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
 
-  // Unescape the string content first
+  // Properly unescape ALL common escapes
   let clean = str.replace(/\\(.)/g, (_, c) => {
-    if (c === 'n') return '\n';
-    if (c === 't') return '\t';
-    if (c === 'r') return '\r';
-    if (c === '"') return '"';
-    if (c === '\\') return '\\';
-    return c; // fallback
+    switch (c) {
+      case 'n': return '\n';
+      case 't': return '\t';
+      case 'r': return '\r';
+      case '"': return '"';
+      case '\\': return '\\';
+      case 'a': return '\x07';
+      case 'b': return '\x08';
+      case 'f': return '\x0C';
+      case 'v': return '\x0B';
+      default: return c;
+    }
   });
 
-  // If string is too long → just return normal to avoid executor crashes
-  if (clean.length > 200) {
-    return `"${str}"`; // fallback to original (with escapes)
+  // If too long or contains weird chars → fallback to original
+  if (clean.length > 150 || /[\x00-\x1F\x7F]/.test(clean)) {
+    return `"${str.replace(/"/g, '\\"')}"`; // safe escaped version
   }
 
-  // Safe string.char
-  const codes = [];
-  for (let i = 0; i < clean.length; i++) {
-    codes.push(clean.charCodeAt(i));
-  }
+  const codes = Array.from(clean).map(c => c.charCodeAt(0));
   return `string.char(${codes.join(",")})`;
 }
 
@@ -111,18 +113,19 @@ function fuckThisCode() {
   let code = document.getElementById("input").value.trim();
   if (!code) return;
 
-  const vars = {}; // original → consistent obfuscated
+  const vars = {}; // original → consistent obfuscated name
 
-  // Step 1: Collect unique user variables
+  // Step 1: Collect user variables (skip ALL keywords & common globals)
   code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (_, name) => {
     if (document.getElementById("nameChaos").checked) {
-      const skip = [
+      const protected = [
         'and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or',
-        'repeat','return','then','true','until','while','goto','self','wait','spawn','delay','game','script',
-        'workspace','Players','LocalPlayer','Character','Humanoid','Vector3','CFrame','Color3','Instance',
-        'math','string','table','pairs','ipairs','next','print','warn','error','pcall','xpcall','assert'
+        'repeat','return','then','true','until','while','goto',
+        'self','wait','spawn','delay','task','game','script','workspace','Players','LocalPlayer','Character',
+        'Humanoid','Vector3','CFrame','Color3','Instance','math','string','table','pairs','ipairs','next',
+        'print','warn','error','pcall','xpcall','assert','type','typeof','require'
       ];
-      if (!skip.includes(name)) {
+      if (!protected.includes(name)) {
         if (!vars[name]) vars[name] = evilName();
       }
     }
@@ -135,7 +138,7 @@ function fuckThisCode() {
     code = code.replace(regex, vars[orig]);
   }
 
-  // Step 3: Encode strings – FIXED
+  // Step 3: Encode strings – now fully safe
   code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_, content) => {
     return safeStringEncode(content);
   });
@@ -146,7 +149,7 @@ function fuckThisCode() {
     return numberFuck(num);
   });
 
-  // Step 5: Chaos
+  // Step 5: Add light chaos
   code = ghostVars() + junkApocalypse() + code;
 
   // Header
@@ -160,7 +163,7 @@ function copyToClipboard() {
   const out = document.getElementById("output");
   out.select();
   document.execCommand("copy");
-  alert("Copied! Should work perfectly now.");
+  alert("Copied! This version should run without breaking 'then' or strings.");
 }
 </script>
 </body>
