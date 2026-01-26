@@ -1,218 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Advanced Lua Obfuscator</title>
+  <meta charset="UTF-8">
+  <title>FUCK YOUR DECOMPILER v666</title>
   <style>
-    body {
-      background: #0d0d0d;
-      color: #00ffcc;
-      font-family: 'Courier New', Courier, monospace;
-      padding: 20px;
-      line-height: 1.5;
-    }
-    h2 {
-      color: #00ff99;
-      text-shadow: 0 0 10px #00ff99;
-    }
-    textarea {
-      width: 100%;
-      height: 280px;
-      background: #111;
-      color: #0f0;
-      border: 1px solid #444;
-      padding: 12px;
-      font-size: 14px;
-      resize: vertical;
-      border-radius: 4px;
-    }
-    button {
-      margin: 15px 0;
-      padding: 12px 24px;
-      background: #00ffcc;
-      color: #000;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-    button:hover {
-      background: #00ccaa;
-      box-shadow: 0 0 15px #00ffcc;
-    }
-    #options {
-      margin: 15px 0;
-      color: #aaa;
-    }
-    label {
-      margin-right: 20px;
-    }
+    body {background:#000;color:#0f0;font-family:'Courier New';padding:20px;}
+    h1 {color:#f00;text-shadow:0 0 10px #f00;letter-spacing:2px;}
+    textarea {width:100%;height:300px;background:#111;color:#0f0;border:1px solid #0f0;padding:10px;font-size:13px;margin:10px 0;}
+    button {background:#f00;color:#000;padding:15px 30px;border:none;font-weight:bold;cursor:pointer;}
+    button:hover {background:#ff4444;box-shadow:0 0 20px #f00;}
+    .chk {color:#aaa;}
   </style>
 </head>
 <body>
 
-<h2>Advanced Lua Obfuscator (Level: Chaos)</h2>
+<h1>░F░U░C░K░ ░Y░O░U░R░ ░D░E░C░O░M░P░I░L░E░R░ v666</h1>
+<textarea id="input" placeholder="-- drop that clean ass script here bitch"></textarea>
 
-<textarea id="input" placeholder="Paste your Lua code here..."></textarea>
-
-<div id="options">
-  <label><input type="checkbox" id="encodeStrings" checked> Encode strings (\\xxx format)</label>
-  <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
-  <label><input type="checkbox" id="junkCode" checked> Add junk code</label>
-  <label><input type="checkbox" id="fakeVars" checked> Add fake variables</label>
+<div class="chk">
+  <label><input type="checkbox" id="maxChaos" checked> MAXIMUM FUCKERY (recommended)</label><br>
+  <label><input type="checkbox" id="vmLayer" checked> Add fake VM layer (decompilers cry)</label><br>
+  <label><input type="checkbox" id="antiDebug" checked> Anti-debug / anti-tamper trash</label>
 </div>
 
-<button onclick="obfuscate()">OBFUSCATE CHAOS MODE </button>
+<button onclick="nuke()">NUKE THIS SHIT</button>
 
-<textarea id="output" placeholder="Your heavily obfuscated code will appear here..."></textarea>
+<textarea id="output" placeholder="-- enjoy the pain"></textarea>
 
 <script>
-// ────────────────────────────────────────────────────────────────
-//   ADVANCED RANDOMIZATION & OBFUSCATION FUNCTIONS
-// ────────────────────────────────────────────────────────────────
+// REAL DEV SHIT ONLY - NO BABY MODE
+const fuck = Math.random;
 
-function randomHex(len = 8) {
-  return Array(len).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+// Insane name generator - no one will ever guess these
+function gen() {
+  const p = ["","__","lIlI","O0oO","xX","dead","beef","c0de","fck","l33t","pwn"][fuck()*11|0];
+  const s = [()=>"_"+((fuck()*1e18)>>>0).toString(36),
+            ()=>"_0x"+(fuck()*1e18>>>0).toString(16),
+            ()=>String.fromCharCode(95)+(fuck()*1e10|0).toString(36).padStart(12,"x"),
+            ()=>p+"_"+Date.now().toString(36)+(fuck()*9999|0)][fuck()*4|0]();
+  return s.length > 50 ? s.substr(0,45)+"_" : s;
 }
 
-function randomName() {
-  const styles = [
-    () => "_0x" + randomHex(8 + Math.floor(Math.random()*6)),
-    () => "__" + randomHex(10) + "__",
-    () => "x" + randomHex(12),
-    () => "_" + Math.random().toString(36).substr(2, 12),
-    () => "l" + randomHex(9) + "_" + randomHex(5)
-  ];
-  return styles[Math.floor(Math.random() * styles.length)]();
-}
-
-function randomJunkVar() {
-  return randomName();
-}
-
-function encodeString(str) {
-  if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
-
-  // Multiple encoding styles (randomly chosen per string)
+// Multiple string murder methods
+function murderStr(s) {
+  if (!document.getElementById("maxChaos").checked) return `"${s}"`;
   const methods = [
-    // \\xxx style
-    s => s.split("").map(c => "\\" + c.charCodeAt(0).toString().padStart(3,"0")).join(""),
-    // \\xHH style
-    s => s.split("").map(c => "\\x" + c.charCodeAt(0).toString(16).padStart(2,"0")).join(""),
-    // byte() calls
-    s => "string.char(" + s.split("").map(c => c.charCodeAt(0)).join(",") + ")"
+    () => s.split('').map(c=>`\\x${c.charCodeAt(0).toString(16).padStart(2,'0')}`).join(''),
+    () => s.split('').map(c=>`\\${c.charCodeAt(0)}`).join(''),
+    () => `string.char(${[...s].map(c=>c.charCodeAt(0)).join(',')})`,
+    () => `("\x66\x75\x63\x6b".."\x79\x6f\x75"):sub(7)..string.char(${[...s].map(c=>c.charCodeAt(0)).join(',')})`,
+    () => `load("return '"+s.replace(/'/g,"\\'")+"'")()`
   ];
-  const method = methods[Math.floor(Math.random() * methods.length)];
-  return `"${method(str)}"`;
+  return methods[fuck()*methods.length|0]();
 }
 
-function encodeNumber(n) {
-  if (!document.getElementById("encodeNumbers").checked) return n;
-
+// Number rape
+function rapeNum(n) {
   const ways = [
-    () => `tonumber("${n}")`,
-    () => `${n}*1`,
-    () => `(${n} + 0)`,
-    () => `bit32.band(${n}, 0xFFFFFFFF)`,
-    () => `0x${Number(n).toString(16)}`,
-    () => `(${Math.floor(Math.random()*100)} + ${n - Math.floor(Math.random()*100)})`
+    n, `0x${n.toString(16)}`, `tonumber("${n}")`, `${n}+0`, `(${n}^0)`, `~-${-n}`, 
+    `(math.random(1e9)^${n}^${n})`, `select(2,pcall(function()return ${n}end))`
   ];
-  return ways[Math.floor(Math.random() * ways.length)]();
+  return ways[fuck()*ways.length|0];
 }
 
-function generateJunkCode(count = 3) {
-  if (!document.getElementById("junkCode").checked) return "";
-
-  const junkLines = [];
-  for (let i = 0; i < count; i++) {
-    const r = Math.random();
-    if (r < 0.35) {
-      // fake local var
-      junkLines.push(`local ${randomJunkVar()} = ${Math.random() > 0.5 ? randomName() : Math.floor(Math.random()*999999)};`);
-    } else if (r < 0.6) {
-      // fake math
-      junkLines.push(`${randomJunkVar()} = math.random(1,9999) * 0;`);
-    } else if (r < 0.8) {
-      // fake string
-      junkLines.push(`local ${randomJunkVar()} = "${randomHex(16)}";`);
-    } else {
-      // fake table
-      junkLines.push(`local ${randomJunkVar()} = {${Math.floor(Math.random()*100)}, "${randomHex(6)}"};`);
-    }
-  }
-  return junkLines.join("\n") + "\n";
+// Fake VM layer - makes every decompiler shit itself
+function injectVM() {
+  if (!document.getElementById("vmLayer").checked) return "";
+  
+  const ops = gen(), key = gen(), data = gen();
+  return `
+local ${ops} = {${gen()}=function(a,b)return a+b end,${gen()}=function(a,b)return a-b end,${gen()}=function(a,b)return a*b end}
+local ${key} = {${Math.floor(fuck()*999999)}}
+local ${data} = string.dump(load("return function() return 'owned' end")) -- fake bytecode
+for _=1,${fuck()*69|0} do ${key}[#${key}+1] = ${fuck()*1337|0} end
+`;
 }
 
-function addFakeVars(code) {
-  if (!document.getElementById("fakeVars").checked) return code;
-
-  const fakeCount = Math.floor(Math.random() * 6) + 4;
-  let fakeDecl = "";
-  for (let i = 0; i < fakeCount; i++) {
-    fakeDecl += `local ${randomJunkVar()} = ${Math.random() > 0.5 ? randomName() : Math.floor(Math.random()*999999)};\n`;
-  }
-  return fakeDecl + code;
+// Anti-debug / anti-tamper garbage
+function antiDebug() {
+  if (!document.getElementById("antiDebug").checked) return "";
+  return `
+if debug then while true do end end
+if getfenv then for k,v in pairs(debug.getupvalue or function()end) do if k~="fuck" then while true do end end end
+pcall(function() while #{...} do end end)
+`;
 }
 
-// ────────────────────────────────────────────────────────────────
-//   MAIN OBFUSCATION FUNCTION
-// ────────────────────────────────────────────────────────────────
+function nuke() {
+  let code = document.getElementById("input").value;
 
-function obfuscate() {
-  let code = document.getElementById("input").value.trim();
+  const varMap = {};
+  const used = new Set();
 
-  // ─── 1. Rename all local variables ─────────────────────────────
-  const vars = {};
-  code = code.replace(/\blocal\s+([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match, name) => {
-    if (!vars[name]) {
-      vars[name] = randomName();
+  // Replace every single local with unholy garbage names
+  code = code.replace(/\blocal\s+([a-zA-Z_]\w*)/g, (_, name) => {
+    if (!varMap[name]) {
+      let newName;
+      do { newName = gen(); } while (used.has(newName));
+      used.add(newName);
+      varMap[name] = newName;
     }
-    return `local ${vars[name]}`;
+    return `local ${varMap[name]}`;
   });
 
-  // Replace all occurrences of original variable names
-  for (const original in vars) {
-    const regex = new RegExp(`\\b${original}\\b`, "g");
-    code = code.replace(regex, vars[original]);
+  // Global replace (including function names, etc.)
+  for (const [old, neu] of Object.entries(varMap)) {
+    const re = new RegExp(`\\b${old}\\b(?!\\.)`, 'g'); // avoid .property
+    code = code.replace(re, neu);
   }
 
-  // ─── 2. Encode strings ─────────────────────────────────────────
-  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match, content) => {
-    try {
-      // Try to unescape the content first
-      const unescaped = content.replace(/\\(.)/g, (_, c) => {
-        if (c === 'n') return '\n';
-        if (c === 't') return '\t';
-        return c;
-      });
-      return encodeString(unescaped);
-    } catch (e) {
-      return encodeString(content);
-    }
+  // Murder strings
+  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_, s) => {
+    try { s = s.replace(/\\"/g, '"'); } catch(e) {}
+    return murderStr(s);
   });
 
-  // ─── 3. Encode numbers (simple version) ────────────────────────
-  code = code.replace(/\b(\d+(\.\d+)?)\b/g, (match, num) => {
-    // Skip if part of scientific notation or already encoded
-    if (/[eE]/.test(match) || /["']/.test(match)) return match;
-    return encodeNumber(num);
-  });
+  // Rape numbers
+  code = code.replace(/\b(\d+\.?\d*)\b/g, m => /[eE]/.test(m) ? m : rapeNum(+m));
 
-  // ─── 4. Add random junk code at top ────────────────────────────
-  code = generateJunkCode(Math.floor(Math.random() * 8) + 5) + code;
+  // Inject pure evil
+  code = antiDebug() + injectVM() + 
+         [...Array(15)].map(() => `local ${gen()} = ${gen()}+${fuck()*1337|0};`).join('\n') +
+         code;
 
-  // ─── 5. Add fake variables at top ──────────────────────────────
-  code = addFakeVars(code);
-
-  // ─── 6. Extra chaos: random line breaks & spaces ───────────────
-  if (Math.random() > 0.4) {
-    code = code.replace(/;/g, "; " + (Math.random() > 0.5 ? "\n" : ""));
-  }
+  // Final chaos touches
+  code = code.split('\n').map(line => 
+    fuck() > 0.3 ? line : line.replace(/;/g, ';--'+gen())
+  ).join('\n');
 
   document.getElementById("output").value = code;
 }
 </script>
-
 </body>
 </html>
