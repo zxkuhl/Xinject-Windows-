@@ -56,10 +56,10 @@
 </head>
 <body>
 
-<h2>DEVS ONLY - OBFUSCATOR FROM HELL v4</h2>
-<p style="color:#ff6666">Paste your shit → hit the button → watch reverse engineers cry</p>
+<h2>DEVS ONLY - OBFUSCATOR FROM HELL v5</h2>
+<p style="color:#ff6666">Paste your shit → hit the button → watch humans give up</p>
 
-<textarea id="input" placeholder="Drop your clean Lua here, we’ll fucking destroy it..."></textarea>
+<textarea id="input" placeholder="Drop your clean Lua here, we’ll make it illegible to humans..."></textarea>
 
 <div id="options">
   <label><input type="checkbox" id="encodeStrings" checked> String rape (multi-method)</label>
@@ -72,11 +72,11 @@
 
 <button onclick="fuckThisCode()">FUCK THIS CODE</button>
 
-<textarea id="output" placeholder="Your code is now unreadable trash. Enjoy."></textarea>
+<textarea id="output" placeholder="Your code is now unreadable to humans. Computers still love it."></textarea>
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   HARDCORE DEV-GRADE OBFUSCATION - NO MERCY
+//   HARDCORE OBFUSCATION - HUMAN-EYE DESTRUCTION MODE
 // ────────────────────────────────────────────────────────────────
 
 function randHex(len = 12) {
@@ -84,17 +84,18 @@ function randHex(len = 12) {
 }
 
 function evilName() {
-  const prefixes = ["_", "__", "x", "l_", "0x", "fuck_", "shit_", "_x", "dev_", "0_", "__0x"];
-  const suffixes = ["__", "_", "x", "69", "1337", "dead", "ghost", "void"];
-  const styles = [
-    () => prefixes[Math.floor(Math.random()*prefixes.length)] + randHex(10 + Math.floor(Math.random()*8)) + suffixes[Math.floor(Math.random()*suffixes.length)],
-    () => "__" + randHex(16) + "__",
-    () => "x" + randHex(14) + "_" + Math.random().toString(36).substr(2,6),
-    () => "_" + randHex(12) + "_" + randHex(8),
-    () => "l" + randHex(10) + randHex(6) + "x",
-    () => "0xDEADBEEF" + randHex(8)
-  ];
-  return styles[Math.floor(Math.random() * styles.length)]();
+  // Pure gibberish: lowercase letters + digits, 10–18 chars, no underscores, no capitals
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const len = 10 + Math.floor(Math.random() * 9); // 10 to 18 chars
+  let name = "";
+  for (let i = 0; i < len; i++) {
+    name += chars[Math.floor(Math.random() * chars.length)];
+  }
+  // Occasionally start with a letter to look more "variable-like"
+  if (Math.random() > 0.2) {
+    name = chars[Math.floor(Math.random() * 26)] + name.slice(1);
+  }
+  return name;
 }
 
 function stringRape(str) {
@@ -156,11 +157,12 @@ function ghostVars(code) {
 function fuckThisCode() {
   let code = document.getElementById("input").value.trim();
 
-  // ─── 1. Name hiding on STEROIDS ───────────────────────────────
+  // ─── 1. Name hiding - human-eye destroyer ─────────────────────
   const vars = {};
   if (document.getElementById("nameChaos").checked) {
     code = code.replace(/\b(local\s+)?([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (m, localKw, name) => {
-      if (name === "local" || name === "function" || name === "if" || name === "then" || name === "end" || name === "return") return m;
+      if (name === "local" || name === "function" || name === "if" || name === "then" || name === "end" || name === "return" ||
+          name === "true" || name === "false" || name === "nil") return m;
       if (!vars[name]) vars[name] = evilName();
       return (localKw ? "local " : "") + vars[name];
     });
@@ -187,13 +189,8 @@ function fuckThisCode() {
   // ─── 4. Total chaos injection ──────────────────────────────────
   code = junkApocalypse() + deadCodeBomb() + ghostVars(code);
 
-  // ─── 5. Add our signature header ───────────────────────────────
+  // ─── 5. Add signature header ───────────────────────────────────
   code = `-- Obfuscated using https://zxkuhl.github.io/Test-for-website/ — good luck reversing this shit\n\n` + code;
-
-  // ─── 6. Random visual fuckery ──────────────────────────────────
-  if (Math.random() > 0.3) {
-    code = code.split(";").map(line => line + (Math.random()>0.5 ? " -- " + randHex(8) : "")).join(";\n");
-  }
 
   document.getElementById("output").value = code;
 }
