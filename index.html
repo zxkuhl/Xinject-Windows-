@@ -16,17 +16,17 @@
 </head>
 <body>
 
-<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Strings 100% Fixed)</h2>
-<p style="color:#ff6666">Fixed malformed strings & escapes – No more "expected then" or parse errors</p>
+<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Number Strings Only)</h2>
+<p style="color:#ff6666">All strings are now pure number soup → string.char(114,121,55,48,...) style</p>
 
 <textarea id="input" placeholder="Paste your Luau script here..."></textarea>
 
 <div id="options">
-  <label><input type="checkbox" id="encodeStrings" checked> Encode strings (safe & smart)</label>
+  <label><input type="checkbox" id="encodeStrings" checked> Encode strings as number soup</label>
   <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
   <label><input type="checkbox" id="junkCode" checked> Light junk code</label>
   <label><input type="checkbox" id="fakeVars" checked> Ghost variables</label>
-  <label><input type="checkbox" id="nameChaos" checked> Destroy variable names</label>
+  <label><input type="checkbox" id="nameChaos" checked> Destroy user variables only</label>
 </div>
 
 <button onclick="fuckThisCode()">OBFUSCATE</button>
@@ -38,7 +38,7 @@
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   STRINGS FULLY FIXED – PROPER ESCAPE HANDLING
+//   STRINGS = ONLY NUMBERS (dev style)
 // ────────────────────────────────────────────────────────────────
 
 function randGibberish(len) {
@@ -49,39 +49,43 @@ function randGibberish(len) {
 }
 
 function evilName() {
-  const len = 8 + Math.floor(Math.random() * 5); // 8–12 chars
+  const len = 8 + Math.floor(Math.random() * 5);
   let name = randGibberish(len);
   if (/^\d/.test(name)) name = "l" + name.slice(1);
   return name;
 }
 
-function safeStringEncode(originalContent) {
+function numberSoup(strContent) {
   if (!document.getElementById("encodeStrings").checked) {
-    return `"${originalContent}"`;
+    return `"${strContent}"`;
   }
 
-  // Properly unescape the raw string content
-  let unescaped = originalContent.replace(/\\(.)/g, (_, escape) => {
-    switch (escape) {
+  // Properly unescape first
+  let unescaped = strContent.replace(/\\(.)/g, (_, e) => {
+    switch (e) {
       case 'n': return '\n';
       case 't': return '\t';
       case 'r': return '\r';
       case '"': return '"';
       case '\\': return '\\';
       case "'": return "'";
-      default: return '\\' + escape; // keep unknown escapes
+      default: return '\\' + e;
     }
   });
 
-  // If too long or complex → fallback to original to avoid issues
-  if (unescaped.length > 150) {
-    return `"${originalContent}"`;
-  }
-
-  // Build safe string.char(...)
+  // Build pure number soup
   const codes = [];
   for (let i = 0; i < unescaped.length; i++) {
     codes.push(unescaped.charCodeAt(i));
+  }
+
+  // If very long → split into multiple string.char + .. for safety
+  if (codes.length > 300) {
+    const chunks = [];
+    for (let i = 0; i < codes.length; i += 200) {
+      chunks.push(`string.char(${codes.slice(i, i+200).join(",")})`);
+    }
+    return chunks.join("..");
   }
 
   return `string.char(${codes.join(",")})`;
@@ -117,18 +121,20 @@ function fuckThisCode() {
   let code = document.getElementById("input").value.trim();
   if (!code) return;
 
-  const vars = {}; // original name → consistent obfuscated name
+  const vars = {};
 
-  // Collect unique user variables
+  // Collect user variables only (protect globals)
   code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (_, name) => {
     if (document.getElementById("nameChaos").checked) {
-      const skip = [
+      const protected = [
         'and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or',
         'repeat','return','then','true','until','while','goto','self','wait','spawn','delay','game','script',
         'workspace','Players','LocalPlayer','Character','Humanoid','Vector3','CFrame','Color3','Instance',
-        'math','string','table','pairs','ipairs','next','print','warn','error','pcall','xpcall','assert'
+        'math','string','table','pairs','ipairs','next','print','warn','error','pcall','xpcall','assert',
+        'loadstring','load','HttpGet','HttpService','getgenv','getrenv','syn','Krnl','Fluxus','getgc',
+        'hookfunction','hookmetamethod','firesignal','firetouchinterest','setreadonly','isreadonly','decompile'
       ];
-      if (!skip.includes(name)) {
+      if (!protected.includes(name)) {
         if (!vars[name]) vars[name] = evilName();
       }
     }
@@ -141,9 +147,9 @@ function fuckThisCode() {
     code = code.replace(regex, vars[orig]);
   }
 
-  // FIXED string encoding
+  // STRINGS → NUMBER SOUP
   code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match, content) => {
-    return safeStringEncode(content);
+    return numberSoup(content);
   });
 
   // Numbers
@@ -166,7 +172,7 @@ function copyToClipboard() {
   const out = document.getElementById("output");
   out.select();
   document.execCommand("copy");
-  alert("Copied! Should be error-free now.");
+  alert("Copied! Pure number soup strings ready.");
 }
 </script>
 </body>
