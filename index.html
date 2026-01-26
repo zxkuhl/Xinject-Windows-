@@ -1,135 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FUCK YOUR DECOMPILER v666</title>
+  <meta charset="UTF-8" />
+  <title>DEVS ONLY - Lua Obfuscator From Hell</title>
   <style>
-    body {background:#000;color:#0f0;font-family:'Courier New';padding:20px;}
-    h1 {color:#f00;text-shadow:0 0 10px #f00;letter-spacing:2px;}
-    textarea {width:100%;height:300px;background:#111;color:#0f0;border:1px solid #0f0;padding:10px;font-size:13px;margin:10px 0;}
-    button {background:#f00;color:#000;padding:15px 30px;border:none;font-weight:bold;cursor:pointer;}
-    button:hover {background:#ff4444;box-shadow:0 0 20px #f00;}
-    .chk {color:#aaa;}
+    body {
+      background: #000;
+      color: #ff0044;
+      font-family: 'Consolas', 'Courier New', monospace;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h2 {
+      color: #ff0044;
+      text-shadow: 0 0 15px #ff0044, 0 0 30px #ff00aa;
+      letter-spacing: 2px;
+    }
+    textarea {
+      width: 100%;
+      height: 320px;
+      background: #0a0a0a;
+      color: #ff0066;
+      border: 2px solid #ff0044;
+      padding: 15px;
+      font-size: 15px;
+      resize: vertical;
+      box-shadow: inset 0 0 20px #000;
+    }
+    button {
+      margin: 20px 0;
+      padding: 15px 40px;
+      background: #ff0044;
+      color: #000;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      text-transform: uppercase;
+      box-shadow: 0 0 25px #ff0044;
+      transition: all 0.4s;
+    }
+    button:hover {
+      background: #ff0066;
+      box-shadow: 0 0 40px #ff0066;
+      transform: scale(1.05);
+    }
+    #options {
+      margin: 20px 0;
+      color: #aaa;
+      font-size: 14px;
+    }
+    label { margin-right: 25px; }
   </style>
 </head>
 <body>
 
-<h1>░F░U░C░K░ ░Y░O░U░R░ ░D░E░C░O░M░P░I░L░E░R░ v666</h1>
-<textarea id="input" placeholder="-- drop that clean ass script here bitch"></textarea>
+<h2>DEVS ONLY - OBFUSCATOR FROM HELL v4</h2>
+<p style="color:#ff6666">Paste your shit → hit the button → watch reverse engineers cry</p>
 
-<div class="chk">
-  <label><input type="checkbox" id="maxChaos" checked> MAXIMUM FUCKERY (recommended)</label><br>
-  <label><input type="checkbox" id="vmLayer" checked> Add fake VM layer (decompilers cry)</label><br>
-  <label><input type="checkbox" id="antiDebug" checked> Anti-debug / anti-tamper trash</label>
+<textarea id="input" placeholder="Drop your clean Lua here, we’ll fucking destroy it..."></textarea>
+
+<div id="options">
+  <label><input type="checkbox" id="encodeStrings" checked> String rape (multi-method)</label>
+  <label><input type="checkbox" id="encodeNumbers" checked> Number fuckery</label>
+  <label><input type="checkbox" id="junkCode" checked> Junk code apocalypse</label>
+  <label><input type="checkbox" id="fakeVars" checked> Ghost variables</label>
+  <label><input type="checkbox" id="deadCode" checked> Dead code injection</label>
+  <label><input type="checkbox" id="nameChaos" checked> Name hiding on steroids</label>
 </div>
 
-<button onclick="nuke()">NUKE THIS SHIT</button>
+<button onclick="fuckThisCode()">FUCK THIS CODE</button>
 
-<textarea id="output" placeholder="-- enjoy the pain"></textarea>
+<textarea id="output" placeholder="Your code is now unreadable trash. Enjoy."></textarea>
 
 <script>
-// REAL DEV SHIT ONLY - NO BABY MODE
-const fuck = Math.random;
+// ────────────────────────────────────────────────────────────────
+//   HARDCORE DEV-GRADE OBFUSCATION - NO MERCY
+// ────────────────────────────────────────────────────────────────
 
-// Insane name generator - no one will ever guess these
-function gen() {
-  const p = ["","__","lIlI","O0oO","xX","dead","beef","c0de","fck","l33t","pwn"][fuck()*11|0];
-  const s = [()=>"_"+((fuck()*1e18)>>>0).toString(36),
-            ()=>"_0x"+(fuck()*1e18>>>0).toString(16),
-            ()=>String.fromCharCode(95)+(fuck()*1e10|0).toString(36).padStart(12,"x"),
-            ()=>p+"_"+Date.now().toString(36)+(fuck()*9999|0)][fuck()*4|0]();
-  return s.length > 50 ? s.substr(0,45)+"_" : s;
+function randHex(len = 12) {
+  return Array(len).fill(0).map(() => Math.floor(Math.random()*16).toString(16)).join('');
 }
 
-// Multiple string murder methods
-function murderStr(s) {
-  if (!document.getElementById("maxChaos").checked) return `"${s}"`;
+function evilName() {
+  const prefixes = ["_", "__", "x", "l_", "0x", "fuck_", "shit_", "_x", "dev_", "0_", "__0x"];
+  const suffixes = ["__", "_", "x", "69", "1337", "dead", "ghost", "void"];
+  const styles = [
+    () => prefixes[Math.floor(Math.random()*prefixes.length)] + randHex(10 + Math.floor(Math.random()*8)) + suffixes[Math.floor(Math.random()*suffixes.length)],
+    () => "__" + randHex(16) + "__",
+    () => "x" + randHex(14) + "_" + Math.random().toString(36).substr(2,6),
+    () => "_" + randHex(12) + "_" + randHex(8),
+    () => "l" + randHex(10) + randHex(6) + "x",
+    () => "0xDEADBEEF" + randHex(8)
+  ];
+  return styles[Math.floor(Math.random() * styles.length)]();
+}
+
+function stringRape(str) {
+  if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
   const methods = [
-    () => s.split('').map(c=>`\\x${c.charCodeAt(0).toString(16).padStart(2,'0')}`).join(''),
-    () => s.split('').map(c=>`\\${c.charCodeAt(0)}`).join(''),
-    () => `string.char(${[...s].map(c=>c.charCodeAt(0)).join(',')})`,
-    () => `("\x66\x75\x63\x6b".."\x79\x6f\x75"):sub(7)..string.char(${[...s].map(c=>c.charCodeAt(0)).join(',')})`,
-    () => `load("return '"+s.replace(/'/g,"\\'")+"'")()`
+    s => s.split("").map(c => "\\" + c.charCodeAt(0).toString().padStart(3,"0")).join(""),
+    s => s.split("").map(c => "\\x" + c.charCodeAt(0).toString(16).padStart(2,"0")).join(""),
+    s => `string.char(${s.split("").map(c => c.charCodeAt(0)).join(",")})`,
+    s => `loadstring("${s.split("").map(c => "\\"..c.charCodeAt(0).toString(16)).join("")}")()`,
+    s => `(function() local t={${s.split("").map(c => c.charCodeAt(0)).join(",")}; return table.concat(t.map(string.char)) end)()`
   ];
-  return methods[fuck()*methods.length|0]();
+  return methods[Math.floor(Math.random()*methods.length)](str);
 }
 
-// Number rape
-function rapeNum(n) {
-  const ways = [
-    n, `0x${n.toString(16)}`, `tonumber("${n}")`, `${n}+0`, `(${n}^0)`, `~-${-n}`, 
-    `(math.random(1e9)^${n}^${n})`, `select(2,pcall(function()return ${n}end))`
+function numberFuck(n) {
+  if (!document.getElementById("encodeNumbers").checked) return n;
+  const tricks = [
+    () => `tonumber("${n}")`,
+    () => `(${n}*1)`,
+    () => `bit32.rshift(${n}*2, 1)`,
+    () => `0x${Number(n).toString(16)}`,
+    () => `(${Math.floor(Math.random()*500)} + ${n - Math.floor(Math.random()*500)})`,
+    () => `math.floor(${n} + math.random(-0.4,0.4))`,
+    () => `(function() return ${n} end)()`
   ];
-  return ways[fuck()*ways.length|0];
+  return tricks[Math.floor(Math.random()*tricks.length)]();
 }
 
-// Fake VM layer - makes every decompiler shit itself
-function injectVM() {
-  if (!document.getElementById("vmLayer").checked) return "";
-  
-  const ops = gen(), key = gen(), data = gen();
-  return `
-local ${ops} = {${gen()}=function(a,b)return a+b end,${gen()}=function(a,b)return a-b end,${gen()}=function(a,b)return a*b end}
-local ${key} = {${Math.floor(fuck()*999999)}}
-local ${data} = string.dump(load("return function() return 'owned' end")) -- fake bytecode
-for _=1,${fuck()*69|0} do ${key}[#${key}+1] = ${fuck()*1337|0} end
-`;
+function junkApocalypse() {
+  if (!document.getElementById("junkCode").checked) return "";
+  const lines = [];
+  const count = Math.floor(Math.random()*12) + 6;
+  for (let i = 0; i < count; i++) {
+    const r = Math.random();
+    if (r < 0.3) lines.push(`local ${evilName()} = ${Math.floor(Math.random()*999999)};`);
+    else if (r < 0.55) lines.push(`${evilName()} = math.random(1,9999)*0;`);
+    else if (r < 0.75) lines.push(`local ${evilName()} = "${randHex(20)}";`);
+    else if (r < 0.9) lines.push(`local ${evilName()} = {${randHex(4)}, ${Math.random()>0.5 ? evilName() : Math.floor(Math.random()*99999)}};`);
+    else lines.push(`if false then ${evilName()} = ${evilName()}; end`);
+  }
+  return lines.join("\n") + "\n";
 }
 
-// Anti-debug / anti-tamper garbage
-function antiDebug() {
-  if (!document.getElementById("antiDebug").checked) return "";
-  return `
-if debug then while true do end end
-if getfenv then for k,v in pairs(debug.getupvalue or function()end) do if k~="fuck" then while true do end end end
-pcall(function() while #{...} do end end)
-`;
+function deadCodeBomb() {
+  if (!document.getElementById("deadCode").checked) return "";
+  return `\nif false then\n  local ${evilName()} = ${evilName()};\n  while true do ${evilName()} = ${evilName()}; end\nend\n`;
 }
 
-function nuke() {
-  let code = document.getElementById("input").value;
+function ghostVars(code) {
+  if (!document.getElementById("fakeVars").checked) return code;
+  let ghosts = "";
+  const count = Math.floor(Math.random()*8) + 5;
+  for (let i = 0; i < count; i++) {
+    ghosts += `local ${evilName()} = ${Math.random()>0.5 ? evilName() : Math.floor(Math.random()*999999)};\n`;
+  }
+  return ghosts + code;
+}
 
-  const varMap = {};
-  const used = new Set();
+function fuckThisCode() {
+  let code = document.getElementById("input").value.trim();
 
-  // Replace every single local with unholy garbage names
-  code = code.replace(/\blocal\s+([a-zA-Z_]\w*)/g, (_, name) => {
-    if (!varMap[name]) {
-      let newName;
-      do { newName = gen(); } while (used.has(newName));
-      used.add(newName);
-      varMap[name] = newName;
+  // ─── 1. Name hiding on STEROIDS ───────────────────────────────
+  const vars = {};
+  if (document.getElementById("nameChaos").checked) {
+    code = code.replace(/\b(local\s+)?([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (m, localKw, name) => {
+      if (name === "local" || name === "function" || name === "if" || name === "then" || name === "end" || name === "return") return m;
+      if (!vars[name]) vars[name] = evilName();
+      return (localKw ? "local " : "") + vars[name];
+    });
+
+    for (const orig in vars) {
+      code = code.replace(new RegExp(`\\b${orig}\\b`, "g"), vars[orig]);
     }
-    return `local ${varMap[name]}`;
-  });
-
-  // Global replace (including function names, etc.)
-  for (const [old, neu] of Object.entries(varMap)) {
-    const re = new RegExp(`\\b${old}\\b(?!\\.)`, 'g'); // avoid .property
-    code = code.replace(re, neu);
   }
 
-  // Murder strings
-  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_, s) => {
-    try { s = s.replace(/\\"/g, '"'); } catch(e) {}
-    return murderStr(s);
+  // ─── 2. String rape ────────────────────────────────────────────
+  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (m, content) => {
+    try {
+      const unesc = content.replace(/\\(.)/g, (_, c) => c==='n'?'\n':c==='t'?'  ':c);
+      return stringRape(unesc);
+    } catch(e) { return stringRape(content); }
   });
 
-  // Rape numbers
-  code = code.replace(/\b(\d+\.?\d*)\b/g, m => /[eE]/.test(m) ? m : rapeNum(+m));
+  // ─── 3. Number fuckery ─────────────────────────────────────────
+  code = code.replace(/\b(\d+(\.\d+)?)\b/g, (m, num) => {
+    if (/[eE]/.test(m) || /["']/.test(m)) return m;
+    return numberFuck(num);
+  });
 
-  // Inject pure evil
-  code = antiDebug() + injectVM() + 
-         [...Array(15)].map(() => `local ${gen()} = ${gen()}+${fuck()*1337|0};`).join('\n') +
-         code;
+  // ─── 4. Total chaos injection ──────────────────────────────────
+  code = junkApocalypse() + deadCodeBomb() + ghostVars(code);
 
-  // Final chaos touches
-  code = code.split('\n').map(line => 
-    fuck() > 0.3 ? line : line.replace(/;/g, ';--'+gen())
-  ).join('\n');
+  // ─── 5. Add our signature header ───────────────────────────────
+  code = `-- Obfuscated using https://zxkuhl.github.io/Test-for-website/ — good luck reversing this shit\n\n` + code;
+
+  // ─── 6. Random visual fuckery ──────────────────────────────────
+  if (Math.random() > 0.3) {
+    code = code.split(";").map(line => line + (Math.random()>0.5 ? " -- " + randHex(8) : "")).join(";\n");
+  }
 
   document.getElementById("output").value = code;
 }
 </script>
+
 </body>
 </html>
