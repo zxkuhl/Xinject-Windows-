@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Advanced Lua Obfuscator</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    h2 {
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff99;
+    }
+    textarea {
+      width: 100%;
+      height: 280px;
+      background: #111;
+      color: #0f0;
+      border: 1px solid #444;
+      padding: 12px;
+      font-size: 14px;
+      resize: vertical;
+      border-radius: 4px;
+    }
+    button {
+      margin: 15px 0;
+      padding: 12px 24px;
+      background: #00ffcc;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #00ccaa;
+      box-shadow: 0 0 15px #00ffcc;
+    }
+    #options {
+      margin: 15px 0;
+      color: #aaa;
+    }
+    label {
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
 
+<h2>Advanced Lua Obfuscator (Level: Chaos)</h2>
+
+<textarea id="input" placeholder="Paste your Lua code here..."></textarea>
+
+<div id="options">
+  <label><input type="checkbox" id="encodeStrings" checked> Encode strings (\\xxx format)</label>
+  <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
+  <label><input type="checkbox" id="junkCode" checked> Add junk code</label>
+  <label><input type="checkbox" id="fakeVars" checked> Add fake variables</label>
+</div>
+
+<button onclick="obfuscate()">OBFUSCATE CHAOS MODE</button>
+
+<textarea id="output" placeholder="Your heavily obfuscated code will appear here..."></textarea>
+
+<script>
+// ────────────────────────────────────────────────────────────────
+//   ADVANCED RANDOMIZATION & OBFUSCATION FUNCTIONS
+// ────────────────────────────────────────────────────────────────
+
+function randomHex(len = 8) {
+  return Array(len).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+
+function randomName() {
+  const styles = [
+    () => "_0x" + randomHex(8 + Math.floor(Math.random()*6)),
+    () => "__" + randomHex(10) + "__",
+    () => "x" + randomHex(12),
+    () => "_" + Math.random().toString(36).substr(2, 12),
+    () => "l" + randomHex(9) + "_" + randomHex(5)
+  ];
+  return styles[Math.floor(Math.random() * styles.length)]();
+}
+
+function randomJunkVar() {
+  return randomName();
+}
+
+function encodeString(str) {
+  if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
+
+  // Multiple encoding styles (randomly chosen per string)
+  const methods = [
+    // \\xxx style
+    s => s.split("").map(c => "\\" + c.charCodeAt(0).toString().padStart(3,"0")).join(""),
+    // \\xHH style
+    s => s.split("").map(c => "\\x" + c.charCodeAt(0).toString(16).padStart(2,"0")).join(""),
+    // byte() calls
+    s => "string.char(" + s.split("").map(c => c.charCodeAt(0)).join(",") + ")"
+  ];
+  const method = methods[Math.floor(Math.random() * methods.length)];
+  return `"${method(str)}"`;
+}
+
+function encodeNumber(n) {
+  if (!document.getElementById("encodeNumbers").checked) return n;
+
+  const ways = [
+    () => `tonumber("${n}")`,
+    () => `${n}*1`,
+    () => `(${n} + 0)`,
+    () => `bit32.band(${n}, 0xFFFFFFFF)`,
+    () => `0x${Number(n).toString(16)}`,
+    () => `(${Math.floor(Math.random()*100)} + ${n - Math.floor(Math.random()*100)})`
+  ];
+  return ways[Math.floor(Math.random() * ways.length)]();
+}
+
+function generateJunkCode(count = 3) {
+  if (!document.getElementById("junkCode").checked) return "";
+
+  const junkLines = [];
+  for (let i = 0; i < count; i++) {
+    const r = Math.random();
+    if (r < 0.35) {
+      // fake local var
+      junkLines.push(`local ${randomJunkVar()} = ${Math.random() > 0.5 ? randomName() : Math.floor(Math.random()*999999)};`);
+    } else if (r < 0.6) {
+      // fake math
+      junkLines.push(`${randomJunkVar()} = math.random(1,9999) * 0;`);
+    } else if (r < 0.8) {
+      // fake string
+      junkLines.push(`local ${randomJunkVar()} = "${randomHex(16)}";`);
+    } else {
+      // fake table
+      junkLines.push(`local ${randomJunkVar()} = {${Math.floor(Math.random()*100)}, "${randomHex(6)}"};`);
+    }
+  }
+  return junkLines.join("\n") + "\n";
+}
+
+function addFakeVars(code) {
+  if (!document.getElementById("fakeVars").checked) return code;
+
+  const fakeCount = Math.floor(Math.random() * 6) + 4;
+  let fakeDecl = "";
+  for (let i = 0; i < fakeCount; i++) {
+    fakeDecl += `local ${randomJunkVar()} = ${Math.random() > 0.5 ? randomName() : Math.floor(Math.random()*999999)};\n`;
+  }
+  return fakeDecl + code;
+}
+
+// ────────────────────────────────────────────────────────────────
+//   MAIN OBFUSCATION FUNCTION
+// ────────────────────────────────────────────────────────────────
+
+function obfuscate() {
+  let code = document.getElementById("input").value.trim();
+
+  // ─── 1. Rename all local variables ─────────────────────────────
+  const vars = {};
+  code = code.replace(/\blocal\s+([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match, name) => {
+    if (!vars[name]) {
+      vars[name] = randomName();
+    }
+    return `local ${vars[name]}`;
+  });
+
+  // Replace all occurrences of original variable names
+  for (const original in vars) {
+    const regex = new RegExp(`\\b${original}\\b`, "g");
+    code = code.replace(regex, vars[original]);
+  }
+
+  // ─── 2. Encode strings ─────────────────────────────────────────
+  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match, content) => {
+    try {
+      // Try to unescape the content first
+      const unescaped = content.replace(/\\(.)/g, (_, c) => {
+        if (c === 'n') return '\n';
+        if (c === 't') return '\t';
+        return c;
+      });
+      return encodeString(unescaped);
+    } catch (e) {
+      return encodeString(content);
+    }
+  });
+
+  // ─── 3. Encode numbers (simple version) ────────────────────────
+  code = code.replace(/\b(\d+(\.\d+)?)\b/g, (match, num) => {
+    // Skip if part of scientific notation or already encoded
+    if (/[eE]/.test(match) || /["']/.test(match)) return match;
+    return encodeNumber(num);
+  });
+
+  // ─── 4. Add random junk code at top ────────────────────────────
+  code = generateJunkCode(Math.floor(Math.random() * 8) + 5) + code;
+
+  // ─── 5. Add fake variables at top ──────────────────────────────
+  code = addFakeVars(code);
+
+  // ─── 6. Extra chaos: random line breaks & spaces ───────────────
+  if (Math.random() > 0.4) {
+    code = code.replace(/;/g, "; " + (Math.random() > 0.5 ? "\n" : ""));
+  }
+
+  document.getElementById("output").value = code;
+}
+</script>
+
+</body>
+</html>
