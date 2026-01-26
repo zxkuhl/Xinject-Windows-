@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DEVS ONLY - Luau Obfuscator From Hell</title>
+  <title>Luau Obfuscator – FUCK YOUR DECOMPILER</title>
   <style>
     body {
       background: #000;
@@ -13,12 +13,11 @@
     }
     h2 {
       color: #ff0044;
-      text-shadow: 0 0 15px #ff0044, 0 0 30px #ff00aa;
-      letter-spacing: 2px;
+      text-shadow: 0 0 15px #ff0044;
     }
     textarea {
       width: 100%;
-      height: 320px;
+      height: 340px;
       background: #0a0a0a;
       color: #ff0066;
       border: 2px solid #ff0044;
@@ -27,12 +26,9 @@
       resize: vertical;
       box-shadow: inset 0 0 20px #000;
     }
-    .buttons {
-      margin: 20px 0;
-    }
     button {
-      padding: 15px 40px;
-      margin-right: 15px;
+      margin: 15px 8px 15px 0;
+      padding: 12px 30px;
       background: #ff0044;
       color: #000;
       border: none;
@@ -41,206 +37,186 @@
       font-weight: bold;
       font-size: 16px;
       text-transform: uppercase;
-      box-shadow: 0 0 25px #ff0044;
-      transition: all 0.4s;
+      box-shadow: 0 0 20px #ff0044;
     }
     button:hover {
       background: #ff0066;
-      box-shadow: 0 0 40px #ff0066;
-      transform: scale(1.05);
+      box-shadow: 0 0 30px #ff0066;
     }
     #options {
       margin: 20px 0;
       color: #aaa;
       font-size: 14px;
     }
-    label { margin-right: 25px; }
+    label { margin-right: 20px; }
     .warning {
-      color: #ff4444;
+      color: #ffdd00;
       font-weight: bold;
-      margin-top: 10px;
+      margin: 10px 0;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-<h2>DEVS ONLY - LUAU OBFUSCATOR FROM HELL</h2>
-<p style="color:#ff6666">Paste your Luau/Lua code → hit the button → your script becomes unreadable trash</p>
+<h2>Luau Obfuscator – FUCK YOUR DECOMPILER</h2>
+<p style="color:#ff6666">For Luau (Roblox) & Lua – Executors will still run it, but humans & decompilers will cry 😭</p>
 
-<textarea id="input" placeholder="Drop your clean Luau/Lua code here..."></textarea>
+<textarea id="input" placeholder="Paste your Luau / Lua script here..."></textarea>
 
 <div id="options">
   <label><input type="checkbox" id="encodeStrings" checked> Encode strings</label>
   <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
   <label><input type="checkbox" id="junkCode" checked> Add junk code</label>
   <label><input type="checkbox" id="fakeVars" checked> Add ghost variables</label>
-  <label><input type="checkbox" id="deadCode" checked> Add dead code</label>
+  <label><input type="checkbox" id="deadCode" checked> Add dead code blocks</label>
   <label><input type="checkbox" id="nameChaos" checked> Destroy variable names</label>
 </div>
 
-<div class="buttons">
-  <button onclick="fuckThisCode()">FUCK THIS CODE</button>
-  <button onclick="copyToClipboard()">COPY TO CLIPBOARD</button>
-</div>
+<button onclick="fuckThisCode()">OBFUSCATE</button>
 
-<textarea id="output" placeholder="Your destroyed Luau code will appear here..."></textarea>
-<div class="warning" id="warning" style="display:none;">
-  WARNING: Running this code may result in severe digital ass destruction.<br>
-  Proceed at your own risk, skid.
-</div>
+<div class="warning">FUCK YOUR DECOMPILER – Running this might still get you detected / banned!</div>
+
+<textarea id="output" readonly placeholder="Your fucked-up code appears here..."></textarea>
+<button onclick="copyToClipboard()">Copy to Clipboard</button>
 
 <script>
 // ────────────────────────────────────────────────────────────────
-//   LUAU-COMPATIBLE OBFUSCATOR - HUMAN EYES DESTROYED
+//   SAFE BUT BRUTAL OBFUSCATION FOR REAL EXECUTORS
 // ────────────────────────────────────────────────────────────────
 
-function randHex(len) {
-  len = len || 12;
-  var chars = "0123456789abcdef";
-  var result = "";
-  for (var i = 0; i < len; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+function randGibberish(len = 12) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let s = "";
+  for (let i = 0; i < len; i++) {
+    s += chars[Math.floor(Math.random() * chars.length)];
   }
-  return result;
+  return s;
 }
 
 function evilName() {
-  var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  var len = 10 + Math.floor(Math.random() * 9); // 10-18 chars
-  var name = "";
-  for (var i = 0; i < len; i++) {
-    name += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  // Start with letter most of the time
-  if (Math.random() > 0.15) {
-    name = chars.charAt(Math.floor(Math.random() * 26)) + name.slice(1);
-  }
+  const len = 12 + Math.floor(Math.random() * 7); // 12–18 chars
+  let name = randGibberish(len);
+  if (/^\d/.test(name)) name = "l" + name.slice(1); // must start with letter
   return name;
 }
 
 function stringRape(str) {
-  if (!document.getElementById("encodeStrings").checked) return '"' + str + '"';
-  var methods = [
-    function(s) { return s.split("").map(function(c) { return "\\" + c.charCodeAt(0).toString().padStart(3,"0"); }).join(""); },
-    function(s) { return s.split("").map(function(c) { return "\\x" + c.charCodeAt(0).toString(16).padStart(2,"0"); }).join(""); },
-    function(s) { return "string.char(" + s.split("").map(function(c) { return c.charCodeAt(0); }).join(",") + ")"; }
+  if (!document.getElementById("encodeStrings").checked) return `"${str}"`;
+
+  const methods = [
+    // Safe & working encodings
+    s => s.split("").map(c => "\\" + c.charCodeAt(0).toString().padStart(3,"0")).join(""),
+    s => s.split("").map(c => "\\x" + c.charCodeAt(0).toString(16).padStart(2,"0")).join(""),
+    s => `string.char(${s.split("").map(c => c.charCodeAt(0)).join(",")})`
   ];
-  var method = methods[Math.floor(Math.random() * methods.length)];
-  return '"' + method(str) + '"';
+
+  return methods[Math.floor(Math.random() * methods.length)](str);
 }
 
 function numberFuck(n) {
   if (!document.getElementById("encodeNumbers").checked) return n;
-  var tricks = [
-    'tonumber("' + n + '")',
-    '(' + n + '*1)',
-    '0x' + Number(n).toString(16),
-    '(' + Math.floor(Math.random()*500) + ' + ' + (n - Math.floor(Math.random()*500)) + ')'
+
+  const tricks = [
+    () => `tonumber("${n}")`,
+    () => `(${n}*1)`,
+    () => `0x${Number(n).toString(16)}`,
+    () => `math.floor(${n} + 0)`
   ];
-  return tricks[Math.floor(Math.random() * tricks.length)];
+
+  return tricks[Math.floor(Math.random() * tricks.length)]();
 }
 
 function junkApocalypse() {
   if (!document.getElementById("junkCode").checked) return "";
-  var lines = [];
-  var count = Math.floor(Math.random()*10) + 5;
-  for (var i = 0; i < count; i++) {
-    var r = Math.random();
-    if (r < 0.4) lines.push("local " + evilName() + " = " + Math.floor(Math.random()*999999) + ";");
-    else if (r < 0.7) lines.push(evilName() + " = math.random(1,9999)*0;");
-    else lines.push("local " + evilName() + " = \"" + randHex(16) + "\";");
+  const lines = [];
+  const count = Math.floor(Math.random() * 8) + 3;
+  for (let i = 0; i < count; i++) {
+    const r = Math.random();
+    if (r < 0.4) lines.push(`local ${evilName()} = ${Math.floor(Math.random()*999999)};`);
+    else if (r < 0.7) lines.push(`local ${evilName()} = "${randGibberish(14)}";`);
+    else lines.push(`if false then ${evilName()}=${evilName()}; end`);
   }
   return lines.join("\n") + "\n";
 }
 
 function deadCodeBomb() {
   if (!document.getElementById("deadCode").checked) return "";
-  return "\nif false then\n  local " + evilName() + " = " + evilName() + ";\n  while true do end\nend\n";
+  return `\nif false then\n  local ${evilName()} = 1337;\n  while true do ${evilName()}=${evilName()}; end\nend\n`;
 }
 
-function ghostVars(code) {
-  if (!document.getElementById("fakeVars").checked) return code;
-  var ghosts = "";
-  var count = Math.floor(Math.random()*6) + 4;
-  for (var i = 0; i < count; i++) {
-    ghosts += "local " + evilName() + " = " + Math.floor(Math.random()*999999) + ";\n";
+function ghostVars() {
+  if (!document.getElementById("fakeVars").checked) return "";
+  let s = "";
+  const count = Math.floor(Math.random()*5) + 2;
+  for (let i = 0; i < count; i++) {
+    s += `local ${evilName()} = ${Math.random()>0.5 ? evilName() : Math.floor(Math.random()*99999)};\n`;
   }
-  return ghosts + code;
+  return s;
 }
 
 function fuckThisCode() {
-  var code = document.getElementById("input").value.trim();
-  var vars = {};
+  let code = document.getElementById("input").value.trim();
+  if (!code) return;
 
-  // ─── DESTROY USER-DEFINED VARIABLE NAMES ──────────────────────
-  if (document.getElementById("nameChaos").checked) {
-    // Find all local declarations and global usages
-    code = code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, function(match, name) {
-      // Skip Lua/Luau reserved words and common globals
-      var reserved = [
-        "and","break","do","else","elseif","end","false","for","function",
-        "if","in","local","nil","not","or","repeat","return","then","true",
-        "until","while","goto","repeat","self","game","script","workspace",
-        "wait","print","warn","error","assert","pcall","xpcall","tostring",
-        "tonumber","type","unpack","setmetatable","getmetatable","rawget",
-        "rawset","rawequal","next","pairs","ipairs","select","newproxy"
-      ];
-      if (reserved.indexOf(name) !== -1) return name;
-      if (!vars[name]) vars[name] = evilName();
-      return vars[name];
-    });
-  }
+  const vars = {};
 
-  // ─── STRING RAPE ───────────────────────────────────────────────
-  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, function(m, content) {
+  // Improved: rename ALL user-defined identifiers safely
+  code = code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match, name) => {
+    if (!document.getElementById("nameChaos").checked) return match;
+
+    const keywords = [
+      'and','break','do','else','elseif','end','false','for','function',
+      'if','in','local','nil','not','or','repeat','return','then','true',
+      'until','while','goto','self','wait','spawn','delay','game','script',
+      'workspace','Players','LocalPlayer','Character','Humanoid'
+    ];
+    if (keywords.includes(name)) return name;
+
+    if (!vars[name]) {
+      vars[name] = evilName();
+    }
+    return vars[name];
+  });
+
+  // Encode strings (safe methods only)
+  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_, content) => {
     try {
-      var unesc = content.replace(/\\(.)/g, function(_, c) {
-        if (c === "n") return "\n";
-        if (c === "t") return "\t";
-        return c;
-      });
+      const unesc = content.replace(/\\(.)/g, (_, c) => c==='n'?'\n':c==='t'?'  ':c);
       return stringRape(unesc);
-    } catch(e) {
+    } catch {
       return stringRape(content);
     }
   });
 
-  // ─── NUMBER FUCKERY ────────────────────────────────────────────
-  code = code.replace(/\b(\d+(\.\d+)?)\b/g, function(m, num) {
-    if (/[eE]/.test(m) || /["']/.test(m)) return m;
+  // Encode numbers
+  code = code.replace(/\b(\d+(\.\d+)?)\b/g, (_, num) => {
+    if (/[eE]/.test(_) || /["']/.test(_)) return _;
     return numberFuck(num);
   });
 
-  // ─── CHAOS INJECTION ───────────────────────────────────────────
-  code = junkApocalypse() + deadCodeBomb() + ghostVars(code);
+  // Chaos injection
+  code = ghostVars() + junkApocalypse() + deadCodeBomb() + code;
 
-  // ─── SCARY HEADER ──────────────────────────────────────────────
-  code =
-    "-- !!!! WARNING !!!!\n" +
-    "-- This code has been OBFUSCATED using https://zxkuhl.github.io/Test-for-website/\n" +
-    "-- Running this may result in severe digital ass destruction\n" +
-    "-- You have been warned, skid\n" +
-    "-- !!!! WARNING !!!!\n\n" +
-    code;
+  // Scary header with your requested message
+  const warning = `-- FUCK YOUR DECOMPILER 😭\n` +
+                  `-- Obfuscated using https://zxkuhl.github.io/Test-for-website/\n` +
+                  `-- Running this might fuck up your game or get you banned!\n\n`;
+  code = warning + code;
 
   document.getElementById("output").value = code;
-  document.getElementById("warning").style.display = "block";
 }
 
 function copyToClipboard() {
-  var output = document.getElementById("output");
+  const output = document.getElementById("output");
   output.select();
-  output.setSelectionRange(0, 99999); // For mobile devices
-  document.execCommand("copy");
-
-  var btn = document.querySelector("button[onclick='copyToClipboard()']");
-  var originalText = btn.innerText;
-  btn.innerText = "COPIED!";
-  btn.style.background = "#00ff88";
-  setTimeout(function() {
-    btn.innerText = originalText;
-    btn.style.background = "#ff0044";
-  }, 1500);
+  output.setSelectionRange(0, 99999);
+  try {
+    document.execCommand("copy");
+    alert("Copied to clipboard! Now go fuck some decompilers 😈");
+  } catch (err) {
+    alert("Couldn't copy – select and copy manually");
+  }
 }
 </script>
 
