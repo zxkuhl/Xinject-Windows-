@@ -2,177 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Luau Obfuscator – FUCK YOUR DECOMPILER</title>
+  <title>WeAreDevs Obfuscator + FUCK YOUR DECOMPILER</title>
   <style>
-    body { background:#000; color:#ff0044; font-family:'Consolas',monospace; padding:20px; line-height:1.6; }
-    h2 { color:#ff0044; text-shadow:0 0 15px #ff0044; }
-    textarea { width:100%; height:340px; background:#0a0a0a; color:#ff0066; border:2px solid #ff0044; padding:15px; font-size:15px; resize:vertical; }
-    button { margin:15px 8px 15px 0; padding:12px 30px; background:#ff0044; color:#000; border:none; font-weight:bold; text-transform:uppercase; cursor:pointer; }
-    button:hover { background:#ff0066; }
-    #options { margin:20px 0; color:#aaa; }
-    label { margin-right:20px; }
-    .warning { color:#ffdd00; font-weight:bold; font-size:16px; margin:10px 0; }
+    body {
+      background: #000;
+      color: #ff0044;
+      font-family: 'Consolas', monospace;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h2 {
+      color: #ff0044;
+      text-shadow: 0 0 15px #ff0044;
+    }
+    textarea {
+      width: 100%;
+      height: 340px;
+      background: #0a0a0a;
+      color: #ff0066;
+      border: 2px solid #ff0044;
+      padding: 15px;
+      font-size: 15px;
+      resize: vertical;
+    }
+    button {
+      margin: 15px 8px 15px 0;
+      padding: 12px 30px;
+      background: #ff0044;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 20px #ff0044;
+    }
+    button:hover {
+      background: #ff0066;
+      box-shadow: 0 0 30px #ff0066;
+    }
+    .warning {
+      color: #ffdd00;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
 
-<h2>Luau Obfuscator – FUCK YOUR DECOMPILER (Pure Number Soup)</h2>
-<p style="color:#ff6666">All strings now look like dev cancer: string.char(114,121,55,48,...)</p>
+<h2>WeAreDevs Obfuscator + FUCK YOUR DECOMPILER</h2>
+<p style="color:#ff6666">Paste script → Hit button → Gets real obfuscated code from WeAreDevs + replaces http with FUCK YOUR DECOMPILER</p>
 
-<textarea id="input" placeholder="Paste your Luau script here..."></textarea>
+<textarea id="input" placeholder="Paste your clean Lua / Luau script here..."></textarea>
 
-<div id="options">
-  <label><input type="checkbox" id="encodeStrings" checked> Number soup strings (dev style)</label>
-  <label><input type="checkbox" id="encodeNumbers" checked> Encode numbers</label>
-  <label><input type="checkbox" id="junkCode" checked> Light junk code</label>
-  <label><input type="checkbox" id="fakeVars" checked> Ghost variables</label>
-  <label><input type="checkbox" id="nameChaos" checked> Destroy user variables only</label>
-</div>
+<button onclick="obfuscateWithWeAreDevs()">OBFUSCATE LIKE REAL DEVS</button>
 
-<button onclick="fuckThisCode()">OBFUSCATE LIKE DEVS</button>
+<div class="warning">FUCK YOUR DECOMPILER 😭 </div>
 
-<div class="warning">FUCK YOUR DECOMPILER 😭 — Obfuscated using https://zxkuhl.github.io/Test-for-website/</div>
-
-<textarea id="output" readonly placeholder="Your dev-tier obfuscated code..."></textarea>
+<textarea id="output" readonly placeholder="Your real obfuscated code appears here..."></textarea>
 <button onclick="copyToClipboard()">Copy to Clipboard</button>
 
 <script>
-// ────────────────────────────────────────────────────────────────
-//   PURE NUMBER SOUP STRINGS – DEV STYLE
-// ────────────────────────────────────────────────────────────────
-
-function randGibberish(len) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let s = "";
-  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
-}
-
-function evilName() {
-  const len = 8 + Math.floor(Math.random() * 5);
-  let name = randGibberish(len);
-  if (/^\d/.test(name)) name = "l" + name.slice(1);
-  return name;
-}
-
-function numberSoup(strContent) {
-  if (!document.getElementById("encodeStrings").checked) {
-    return `"${strContent}"`;
+async function obfuscateWithWeAreDevs() {
+  const input = document.getElementById("input").value.trim();
+  if (!input) {
+    alert("Paste some code first gang!");
+    return;
   }
 
-  // Properly unescape raw string content
-  let unescaped = strContent.replace(/\\(.)/g, (_, e) => {
-    switch (e) {
-      case 'n': return '\n';
-      case 't': return '\t';
-      case 'r': return '\r';
-      case '"': return '"';
-      case '\\': return '\\';
-      case "'": return "'";
-      default: return '\\' + e;
+  const outputArea = document.getElementById("output");
+  outputArea.value = "Obfuscating... hold up...";
+
+  try {
+    // Step 1: Send script to real WeAreDevs obfuscator
+    const response = await fetch("https://wearedevs.net/obfuscator/api", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ script: input })
+    });
+
+    if (!response.ok) {
+      throw new Error("API failed – try again or check if site is down");
     }
-  });
 
-  const codes = [];
-  for (let i = 0; i < unescaped.length; i++) {
-    codes.push(unescaped.charCodeAt(i));
+    const data = await response.json();
+    let obfuscated = data.obfuscated || "";
+
+    // Step 2: Replace EVERY occurrence of "http" with "FUCK YOUR DECOMPILER"
+    obfuscated = obfuscated.replace(/http/g, "FUCK YOUR DECOMPILER");
+
+    // Add our signature
+    const finalCode = `-- FUCK YOUR DECOMPILER 😭\n` +
+                      `-- Obfuscated using real WeAreDevs + modified by https://zxkuhl.github.io/Test-for-website/\n\n` +
+                      obfuscated;
+
+    outputArea.value = finalCode;
+  } catch (err) {
+    outputArea.value = "Error: " + err.message + "\n\nTry again or paste manually into https://wearedevs.net/obfuscator";
   }
-
-  // Split long strings into chunks to avoid executor limits
-  if (codes.length > 300) {
-    const chunks = [];
-    for (let i = 0; i < codes.length; i += 200) {
-      chunks.push(`string.char(${codes.slice(i, i+200).join(",")})`);
-    }
-    return chunks.join("..");
-  }
-
-  return `string.char(${codes.join(",")})`;
-}
-
-function numberFuck(n) {
-  if (!document.getElementById("encodeNumbers").checked) return n;
-  return `tonumber("${n}")`;
-}
-
-function junkApocalypse() {
-  if (!document.getElementById("junkCode").checked) return "";
-  const lines = [];
-  const count = Math.floor(Math.random() * 5) + 1;
-  for (let i = 0; i < count; i++) {
-    if (Math.random() < 0.5) lines.push(`local ${evilName()} = ${Math.floor(Math.random()*9999)};`);
-    else lines.push(`local ${evilName()} = "${randGibberish(8)}";`);
-  }
-  return lines.join("\n") + "\n";
-}
-
-function ghostVars() {
-  if (!document.getElementById("fakeVars").checked) return "";
-  let s = "";
-  const count = Math.floor(Math.random() * 4) + 1;
-  for (let i = 0; i < count; i++) {
-    s += `local ${evilName()} = ${Math.floor(Math.random()*99999)};\n`;
-  }
-  return s;
-}
-
-function fuckThisCode() {
-  let code = document.getElementById("input").value.trim();
-  if (!code) return;
-
-  const vars = {};
-
-  // Collect only user variables (protect important stuff)
-  code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (_, name) => {
-    if (document.getElementById("nameChaos").checked) {
-      const protected = [
-        'and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or',
-        'repeat','return','then','true','until','while','goto','self','wait','spawn','delay','game','script',
-        'workspace','Players','LocalPlayer','Character','Humanoid','Vector3','CFrame','Color3','Instance',
-        'math','string','table','pairs','ipairs','next','print','warn','error','pcall','xpcall','assert',
-        'loadstring','load','HttpGet','HttpService','getgenv','getrenv','syn','Krnl','Fluxus','getgc',
-        'hookfunction','hookmetamethod','firesignal','firetouchinterest','setreadonly','isreadonly','decompile'
-      ];
-      if (!protected.includes(name)) {
-        if (!vars[name]) vars[name] = evilName();
-      }
-    }
-    return _;
-  });
-
-  // Replace consistently
-  for (const orig in vars) {
-    const regex = new RegExp(`\\b${orig}\\b`, 'g');
-    code = code.replace(regex, vars[orig]);
-  }
-
-  // STRINGS → PURE NUMBER SOUP
-  code = code.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match, content) => {
-    return numberSoup(content);
-  });
-
-  // Numbers
-  code = code.replace(/\b(\d+(\.\d+)?)\b/g, (_, num) => {
-    if (/[eE]/.test(_) || /["']/.test(_)) return _;
-    return numberFuck(num);
-  });
-
-  // Chaos
-  code = ghostVars() + junkApocalypse() + code;
-
-  // Header
-  const header = `-- FUCK YOUR DECOMPILER 😭\n-- Obfuscated using https://zxkuhl.github.io/Test-for-website/\n\n`;
-  code = header + code;
-
-  document.getElementById("output").value = code;
 }
 
 function copyToClipboard() {
   const out = document.getElementById("output");
   out.select();
   document.execCommand("copy");
-  alert("Copied! Pure dev soup ready 😈");
+  alert("Copied! Real dev shit ready gang 😈");
 }
 </script>
+
 </body>
 </html>
