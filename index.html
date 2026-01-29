@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Xinject/windows</title>
   <style>
     * {
@@ -15,8 +15,9 @@
       min-height: 100vh;
       background: linear-gradient(135deg, #1a0000, #330000, #4d0000);
       color: #ffcccc;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       overflow-x: hidden;
+      line-height: 1.5;
     }
 
     .particles {
@@ -28,18 +29,18 @@
 
     .particle {
       position: absolute;
-      background: rgba(255, 80, 80, 0.7);
+      background: rgba(255, 80, 80, 0.6);
       border-radius: 50%;
-      box-shadow: 0 0 15px rgba(255, 60, 60, 0.9);
+      box-shadow: 0 0 12px rgba(255, 60, 60, 0.7);
       animation: float linear infinite;
       opacity: 0;
     }
 
     @keyframes float {
-      0%   { transform: translateY(100vh) scale(0.2); opacity: 0; }
-      10%  { opacity: 0.8; }
-      90%  { opacity: 0.8; }
-      100% { transform: translateY(-30vh) scale(0.7); opacity: 0; }
+      0%   { transform: translateY(100vh) scale(0.3); opacity: 0; }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.7; }
+      100% { transform: translateY(-20vh) scale(0.6); opacity: 0; }
     }
 
     .container {
@@ -50,22 +51,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem;
+      text-align: center;
     }
 
     .title {
-      font-size: clamp(4rem, 14vw, 11rem);
+      font-size: clamp(3.2rem, 12vw, 8rem);
       font-weight: 900;
-      text-align: center;
-      background: linear-gradient(90deg, #ff4d4d, #ff9999, #ff4d4d, #ff1a1a);
+      background: linear-gradient(90deg, #ff4d4d, #ff9999, #ff4d4d);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      background-size: 400% 400%;
-      animation: titleFlow 7s ease-in-out infinite;
-      text-shadow: 0 0 35px rgba(255, 70, 70, 0.9);
-      margin-bottom: 1.5rem;
-      letter-spacing: -3px;
+      background-size: 300% 300%;
+      animation: titleFlow 8s ease-in-out infinite;
+      text-shadow: 0 0 25px rgba(255, 70, 70, 0.8);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
     }
 
     @keyframes titleFlow {
@@ -74,55 +75,61 @@
     }
 
     .subtitle {
-      font-size: clamp(1.3rem, 4.5vw, 2rem);
-      opacity: 0.85;
-      margin-bottom: 3rem;
-      text-shadow: 0 0 20px rgba(255, 100, 100, 0.7);
-      text-align: center;
+      font-size: clamp(1.1rem, 5vw, 1.6rem);
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      max-width: 90%;
     }
 
-    /* Fixed Hamburger Menu */
+    .small-text {
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+      opacity: 0.7;
+      max-width: 90%;
+    }
+
+    /* Hamburger Menu - Mobile optimized */
     #menu-check {
       display: none;
     }
 
     .menu-toggle {
       position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
+      top: 1rem;
+      right: 1rem;
       z-index: 100;
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      touch-action: manipulation;
     }
 
     .hamburger {
       position: relative;
-      width: 30px;
-      height: 3px;
+      width: 36px;
+      height: 4px;
       background: #ff4d4d;
-      border-radius: 3px;
-      box-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
-      transition: all 0.4s;
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(255, 77, 77, 0.8);
+      transition: all 0.35s ease;
     }
 
     .hamburger::before,
     .hamburger::after {
       content: '';
       position: absolute;
-      width: 30px;
-      height: 3px;
+      width: 36px;
+      height: 4px;
       background: #ff4d4d;
-      border-radius: 3px;
-      box-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
-      transition: all 0.4s;
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(255, 77, 77, 0.8);
+      transition: all 0.35s ease;
     }
 
-    .hamburger::before { top: -10px; }
-    .hamburger::after  { bottom: -10px; }
+    .hamburger::before { top: -12px; }
+    .hamburger::after  { bottom: -12px; }
 
     #menu-check:checked + .menu-toggle .hamburger {
       background: transparent;
@@ -130,45 +137,45 @@
     }
 
     #menu-check:checked + .menu-toggle .hamburger::before {
-      transform: rotate(45deg) translate(7px, 7px);
+      transform: rotate(45deg) translate(9px, 9px);
     }
 
     #menu-check:checked + .menu-toggle .hamburger::after {
-      transform: rotate(-45deg) translate(8px, -8px);
+      transform: rotate(-45deg) translate(9px, -9px);
     }
 
     .side-menu {
       position: fixed;
-      top: 0;
-      right: -300px;
-      width: 280px;
+      inset: 0;
+      transform: translateX(100%);
+      width: 100%;
       height: 100%;
-      background: rgba(30, 0, 0, 0.95);
-      backdrop-filter: blur(8px);
-      border-left: 2px solid #c41e1e;
-      box-shadow: -10px 0 30px rgba(200, 30, 30, 0.6);
-      transition: right 0.5s ease;
+      background: rgba(30, 0, 0, 0.97);
+      backdrop-filter: blur(10px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 90;
-      padding: 5rem 2rem 2rem;
-      color: #ffcccc;
+      padding: 5rem 1.5rem 2rem;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     #menu-check:checked ~ .side-menu {
-      right: 0;
+      transform: translateX(0);
     }
 
     .menu-item {
-      margin: 1.5rem 0;
-      font-size: 1.4rem;
+      margin: 1.8rem 0;
+      font-size: clamp(1.3rem, 6vw, 1.8rem);
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s;
     }
 
-    .menu-item:hover {
+    .menu-item:hover,
+    .menu-item:focus {
       color: #ff4d4d;
-      text-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
+      text-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
     }
 
     .menu-item a {
@@ -183,38 +190,47 @@
       background: rgba(70, 0, 0, 0.6);
       border-radius: 12px;
       border: 1px solid #c41e1e;
+      font-size: 1rem;
     }
 
     .changelog h3 {
       color: #ff9999;
       margin-bottom: 1rem;
-      border-bottom: 1px solid #c41e1e;
-      padding-bottom: 0.5rem;
+      font-size: 1.3rem;
     }
 
     .changelog ul {
       list-style: none;
-      padding-left: 1.2rem;
+      padding-left: 1rem;
     }
 
     .changelog li {
-      margin: 0.8rem 0;
+      margin: 1rem 0;
       position: relative;
+      padding-left: 1.5rem;
     }
 
     .changelog li::before {
       content: "•";
       color: #ff4d4d;
       position: absolute;
-      left: -1.2rem;
-      font-size: 1.5rem;
+      left: 0;
+      font-size: 1.6rem;
     }
 
-    .small-text {
-      margin-top: 4rem;
-      opacity: 0.65;
-      font-size: 1rem;
-      text-align: center;
+    /* Media Queries for larger screens */
+    @media (min-width: 768px) {
+      .container { padding: 3rem; }
+      .title { font-size: clamp(5rem, 10vw, 10rem); }
+      .subtitle { font-size: 2rem; max-width: 800px; }
+      .small-text { font-size: 1.1rem; }
+      .side-menu { width: 320px; transform: translateX(100%); }
+      #menu-check:checked ~ .side-menu { transform: translateX(0); }
+    }
+
+    /* Reduce particles on mobile for performance */
+    @media (max-width: 767px) {
+      .particle { animation-duration: 12s; } /* Slower for less CPU */
     }
   </style>
 </head>
@@ -222,13 +238,11 @@
 
   <div class="particles" id="particles"></div>
 
-  <!-- Checkbox + Label (input first for sibling selector) -->
   <input type="checkbox" id="menu-check" />
   <label for="menu-check" class="menu-toggle">
     <div class="hamburger"></div>
   </label>
 
-  <!-- Side Menu -->
   <div class="side-menu">
     <div class="menu-item">
       <a href="https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip" download>Download (ZIP)</a>
@@ -239,43 +253,48 @@
         <h3>Xinject Executor Changelog</h3>
         <ul>
           <li><strong>Beta 0.1 (Current)</strong> - Initial release: Basic installer.exe, Roblox injection support, reddish GUI loader</li>
-          <li><strong>Upcoming v0.2</strong> - One-time injection (loader closes after inject), in-game ScreenGui menu</li>
-          <li><strong>Planned v0.3</strong> - FPS unlocker, disable Robux purchases, KittyScripts browser (Blox Fruits focus)</li>
-          <li><strong>v1.0 Goal</strong> - Full script hub, auto-attach, stealth mode, multi-game profiles</li>
+          <li><strong>Upcoming v0.2</strong> - One-time injection, in-game ScreenGui menu</li>
+          <li><strong>Planned v0.3</strong> - FPS unlocker, disable Robux purchases, script browser</li>
+          <li><strong>v1.0 Goal</strong> - Full script hub, stealth features, multi-game support</li>
         </ul>
       </div>
     </div>
   </div>
 
   <div class="container">
-    <h1 class="title">Xinject<span style="font-size:0.55em; opacity:0.9">/windows</span></h1>
+    <h1 class="title">Xinject<span style="font-size:0.6em; opacity:0.9">/windows</span></h1>
     
-    <p class="subtitle">powerful Roblox injection & executor • one-click ZIP download</p>
+    <p class="subtitle">Powerful Roblox executor & injector • One-click download</p>
 
     <p class="small-text">
-      Includes: installer.exe, GUI files, README + updates<br>
-      x64 Windows • Beta • Join Discord for bugs & scripts • Use at your own risk
+      Includes installer.exe + files • x64 Windows Beta<br>
+      Join Discord for bugs/scripts • Use at your own risk
     </p>
   </div>
 
   <script>
+    // Particle generator with mobile throttle
+    const isMobile = window.innerWidth <= 767;
+    const spawnInterval = isMobile ? 600 : 280; // Slower spawn on mobile
+    const initialBurst = isMobile ? 10 : 18;
+
     function createParticle() {
       const p = document.createElement('div');
       p.className = 'particle';
-      const size = Math.random() * 7 + 4;
+      const size = Math.random() * 6 + 3;
       p.style.width = size + 'px';
       p.style.height = size + 'px';
       p.style.left = Math.random() * 100 + 'vw';
-      p.style.animationDuration = Math.random() * 10 + 10 + 's';
-      p.style.animationDelay = Math.random() * 6 + 's';
+      p.style.animationDuration = (Math.random() * 8 + (isMobile ? 10 : 8)) + 's';
+      p.style.animationDelay = Math.random() * 5 + 's';
       document.getElementById('particles').appendChild(p);
-      setTimeout(() => p.remove(), 20000);
+      setTimeout(() => p.remove(), 18000);
     }
 
-    setInterval(createParticle, 280);
+    setInterval(createParticle, spawnInterval);
 
-    for(let i = 0; i < 18; i++) {
-      setTimeout(createParticle, i * 180);
+    for(let i = 0; i < initialBurst; i++) {
+      setTimeout(createParticle, i * 200);
     }
   </script>
 </body>
