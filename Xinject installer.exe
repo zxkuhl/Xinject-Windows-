@@ -1,1 +1,83 @@
-https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip
+using System;
+using System.IO;
+using System.Net;
+using System.Windows.Forms;
+
+class InstallerApp
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        Form window = new Form();
+        window.Text = "Xinject Installer";
+        window.Width = 400;
+        window.Height = 200;
+        window.FormBorderStyle = FormBorderStyle.FixedDialog;
+        window.MaximizeBox = false;
+
+        Button installButton = new Button();
+        installButton.Text = "Install";
+        installButton.Width = 120;
+        installButton.Height = 35;
+        installButton.Left = (window.ClientSize.Width - installButton.Width) / 2;
+        installButton.Top = 40;
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.Width = 300;
+        progressBar.Height = 20;
+        progressBar.Left = (window.ClientSize.Width - progressBar.Width) / 2;
+        progressBar.Top = 90;
+
+        Label status = new Label();
+        status.Text = "Ready";
+        status.AutoSize = true;
+        status.Top = 120;
+        status.Left = (window.ClientSize.Width - status.Width) / 2;
+
+        installButton.Click += (s, e) =>
+        {
+            installButton.Enabled = false;
+            status.Text = "Downloading...";
+
+            string url = "https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip";
+            string downloads = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads",
+                "Xinject-main.zip"
+            );
+
+            WebClient client = new WebClient();
+
+            client.DownloadProgressChanged += (sender, args) =>
+            {
+                progressBar.Value = args.ProgressPercentage;
+            };
+
+            client.DownloadFileCompleted += (sender, args) =>
+            {
+                if (args.Error != null)
+                {
+                    status.Text = "Download failed";
+                }
+                else
+                {
+                    status.Text = "Downloaded to Downloads";
+                }
+
+                installButton.Enabled = true;
+                client.Dispose();
+            };
+
+            client.DownloadFileAsync(new Uri(url), downloads);
+        };
+
+        window.Controls.Add(installButton);
+        window.Controls.Add(progressBar);
+        window.Controls.Add(status);
+
+        Application.Run(window);
+    }
+}
