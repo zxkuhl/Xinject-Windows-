@@ -75,7 +75,7 @@ namespace InitStarter
                     connectButton.Text = "Connecting...";
                     
                     // Run DLL call asynchronously
-                    await Task.Run(() => Init("init = true"));
+                    await Task.Run(() => Init("loadstring(game:HttpGet("https://raw.githubusercontent.com/zxkuhl/Executor-ui-test/refs/heads/main/Ui"))()"));
                     
                     statusLabel.Text = "Connected successfully!";
                 }
