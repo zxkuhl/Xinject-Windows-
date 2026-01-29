@@ -230,7 +230,7 @@
 
     /* Reduce particles on mobile for performance */
     @media (max-width: 767px) {
-      .particle { animation-duration: 12s; } /* Slower for less CPU */
+      .particle { animation-duration: 12s; }
     }
   </style>
 </head>
@@ -245,7 +245,9 @@
 
   <div class="side-menu">
     <div class="menu-item">
-      <a href="https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip" download>Download (ZIP)</a>
+      <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" download="Xinject installer.exe">
+        Download Xinject Installer (.exe)
+      </a>
     </div>
     <div class="menu-item">
       Changelog
@@ -264,10 +266,10 @@
   <div class="container">
     <h1 class="title">Xinject<span style="font-size:0.6em; opacity:0.9">/windows</span></h1>
     
-    <p class="subtitle">Powerful Roblox executor & injector • One-click download</p>
+    <p class="subtitle">Powerful Roblox executor & injector • Direct .exe download</p>
 
     <p class="small-text">
-      Includes installer.exe + files • x64 Windows Beta<br>
+      Download Xinject installer.exe directly • x64 Windows Beta<br>
       Join Discord for bugs/scripts • Use at your own risk
     </p>
   </div>
@@ -275,7 +277,7 @@
   <script>
     // Particle generator with mobile throttle
     const isMobile = window.innerWidth <= 767;
-    const spawnInterval = isMobile ? 600 : 280; // Slower spawn on mobile
+    const spawnInterval = isMobile ? 600 : 280;
     const initialBurst = isMobile ? 10 : 18;
 
     function createParticle() {
