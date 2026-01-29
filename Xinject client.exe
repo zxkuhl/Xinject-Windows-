@@ -1,0 +1,63 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace InitStarter
+{
+    static class Program
+    {
+        // DLL import
+        [DllImport("init start.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void Init(string msg);
+
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            var form = new Form()
+            {
+                Text = "Connector",
+                Width = 300,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false
+            };
+
+            var connectButton = new Button()
+            {
+                Text = "Connect",
+                Width = 100,
+                Height = 40,
+                Left = (form.ClientSize.Width - 100) / 2,
+                Top = (form.ClientSize.Height - 40) / 2
+            };
+            form.Controls.Add(connectButton);
+
+            connectButton.Click += async (sender, e) =>
+            {
+                connectButton.Enabled = false;
+
+                try
+                {
+                    // Run DLL call asynchronously
+                    await Task.Run(() => Init("init = true"));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"DLL Error: {ex.Message}");
+                }
+
+                // Wait 3 seconds asynchronously
+                await Task.Delay(3000);
+
+                // Close the form
+                form.Close();
+            };
+
+            Application.Run(form);
+        }
+    }
+}
