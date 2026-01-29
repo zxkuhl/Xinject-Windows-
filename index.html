@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Xinject / KittyScripts</title>
+  <title>Xinject/windows</title>
   <style>
     * {
       margin: 0;
@@ -19,7 +19,6 @@
       overflow-x: hidden;
     }
 
-    /* Animated background particles */
     .particles {
       position: fixed;
       inset: 0;
@@ -55,54 +54,54 @@
     }
 
     .title {
-      font-size: clamp(3.5rem, 12vw, 9rem);
+      font-size: clamp(4rem, 14vw, 11rem);
       font-weight: 900;
       text-align: center;
       background: linear-gradient(90deg, #ff4d4d, #ff9999, #ff4d4d, #ff1a1a);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      background-size: 300% 300%;
-      animation: titleGlow 6s ease-in-out infinite;
-      text-shadow: 0 0 30px rgba(255, 70, 70, 0.8);
+      background-size: 400% 400%;
+      animation: titleFlow 7s ease-in-out infinite;
+      text-shadow: 0 0 35px rgba(255, 70, 70, 0.9);
       margin-bottom: 1.5rem;
-      letter-spacing: -2px;
+      letter-spacing: -3px;
     }
 
-    @keyframes titleGlow {
+    @keyframes titleFlow {
       0%, 100% { background-position: 0% 50%; }
       50%      { background-position: 100% 50%; }
     }
 
     .subtitle {
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
-      opacity: 0.9;
-      margin-bottom: 4rem;
-      text-shadow: 0 0 15px rgba(255, 100, 100, 0.6);
+      font-size: clamp(1.3rem, 4.5vw, 2rem);
+      opacity: 0.85;
+      margin-bottom: 5rem;
+      text-shadow: 0 0 20px rgba(255, 100, 100, 0.7);
     }
 
     .download-btn {
       position: relative;
-      padding: 1.2rem 3rem;
-      font-size: 1.5rem;
+      padding: 1.3rem 3.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
       color: white;
       background: linear-gradient(45deg, #c41e1e, #e63939, #c41e1e);
       border: none;
-      border-radius: 50px;
+      border-radius: 999px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.8rem;
-      box-shadow: 0 10px 30px rgba(200, 30, 30, 0.5);
+      gap: 1rem;
+      box-shadow: 0 12px 35px rgba(200, 30, 30, 0.6);
       transition: all 0.4s ease;
       overflow: hidden;
     }
 
     .download-btn:hover {
-      transform: translateY(-6px) scale(1.06);
-      box-shadow: 0 20px 40px rgba(200, 30, 30, 0.7);
+      transform: translateY(-8px) scale(1.08);
+      box-shadow: 0 25px 50px rgba(200, 30, 30, 0.8);
       background: linear-gradient(45deg, #e63939, #ff4d4d, #e63939);
     }
 
@@ -113,21 +112,20 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 60%);
-      animation: shine 6s infinite linear;
-      pointer-events: none;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+      animation: shine 7s infinite linear;
     }
 
     @keyframes shine {
-      0%   { transform: translateX(-100%) translateY(-50%); }
-      50%  { transform: translateX(100%)  translateY(-50%); }
-      100% { transform: translateX(100%)  translateY(-50%); }
+      0%   { transform: translateX(-120%) translateY(-50%); }
+      50%  { transform: translateX(120%) translateY(-50%); }
+      100% { transform: translateX(120%) translateY(-50%); }
     }
 
     .small-text {
-      margin-top: 5rem;
+      margin-top: 6rem;
       opacity: 0.6;
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -136,9 +134,9 @@
   <div class="particles" id="particles"></div>
 
   <div class="container">
-    <h1 class="title">Xinject<span style="font-size:0.6em; opacity:0.85"> / KittyScripts</span></h1>
+    <h1 class="title">Xinject<span style="font-size:0.55em; opacity:0.9">/windows</span></h1>
     
-    <p class="subtitle">Advanced injection & scripting environment</p>
+    <p class="subtitle">powerful injection environment for Windows</p>
 
     <a 
       href="https://github.com/placeholder-org/xinject/releases/latest"
@@ -146,37 +144,30 @@
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span>Download Xinject for Windows</span>
+      Download Xinject for Windows
     </a>
 
-    <p class="small-text">Windows x64 • Coming soon for other platforms</p>
+    <p class="small-text">x64 • Placeholder release link • Use at your own risk</p>
   </div>
 
   <script>
-    // Simple particle background
     function createParticle() {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      
-      const size = Math.random() * 6 + 3;
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-      
-      particle.style.left = Math.random() * 100 + 'vw';
-      particle.style.animationDuration = Math.random() * 8 + 8 + 's';
-      particle.style.animationDelay = Math.random() * 5 + 's';
-      
-      document.getElementById('particles').appendChild(particle);
-      
-      setTimeout(() => particle.remove(), 15000);
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 7 + 4;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = Math.random() * 10 + 10 + 's';
+      p.style.animationDelay = Math.random() * 6 + 's';
+      document.getElementById('particles').appendChild(p);
+      setTimeout(() => p.remove(), 20000);
     }
 
-    // Spawn particles
-    setInterval(createParticle, 300);
+    setInterval(createParticle, 280);
 
-    // Initial burst
-    for(let i = 0; i < 15; i++) {
-      setTimeout(createParticle, i * 200);
+    for(let i = 0; i < 18; i++) {
+      setTimeout(createParticle, i * 180);
     }
   </script>
 </body>
