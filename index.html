@@ -19,7 +19,6 @@
       overflow-x: hidden;
     }
 
-    /* Particles */
     .particles {
       position: fixed;
       inset: 0;
@@ -82,7 +81,11 @@
       text-align: center;
     }
 
-    /* Hamburger Menu */
+    /* Fixed Hamburger Menu */
+    #menu-check {
+      display: none;
+    }
+
     .menu-toggle {
       position: fixed;
       top: 1.5rem;
@@ -91,24 +94,13 @@
       width: 50px;
       height: 50px;
       cursor: pointer;
-    }
-
-    .menu-toggle input {
-      display: none;
-    }
-
-    .hamburger {
-      position: relative;
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .hamburger span {
+    .hamburger {
       position: relative;
-      display: block;
       width: 30px;
       height: 3px;
       background: #ff4d4d;
@@ -117,8 +109,8 @@
       transition: all 0.4s;
     }
 
-    .hamburger span::before,
-    .hamburger span::after {
+    .hamburger::before,
+    .hamburger::after {
       content: '';
       position: absolute;
       width: 30px;
@@ -129,24 +121,19 @@
       transition: all 0.4s;
     }
 
-    .hamburger span::before {
-      top: -10px;
-    }
+    .hamburger::before { top: -10px; }
+    .hamburger::after  { bottom: -10px; }
 
-    .hamburger span::after {
-      bottom: -10px;
-    }
-
-    #menu-check:checked ~ .hamburger span {
+    #menu-check:checked + .menu-toggle .hamburger {
       background: transparent;
       box-shadow: none;
     }
 
-    #menu-check:checked ~ .hamburger span::before {
+    #menu-check:checked + .menu-toggle .hamburger::before {
       transform: rotate(45deg) translate(7px, 7px);
     }
 
-    #menu-check:checked ~ .hamburger span::after {
+    #menu-check:checked + .menu-toggle .hamburger::after {
       transform: rotate(-45deg) translate(8px, -8px);
     }
 
@@ -191,7 +178,7 @@
     }
 
     .changelog {
-      margin-top: 3rem;
+      margin-top: 2rem;
       padding: 1.5rem;
       background: rgba(70, 0, 0, 0.6);
       border-radius: 12px;
@@ -223,27 +210,6 @@
       font-size: 1.5rem;
     }
 
-    .download-btn {
-      display: block;
-      margin: 2rem auto;
-      padding: 1rem 2.5rem;
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: white;
-      background: linear-gradient(45deg, #c41e1e, #e63939);
-      border: none;
-      border-radius: 50px;
-      text-align: center;
-      text-decoration: none;
-      box-shadow: 0 8px 25px rgba(200, 30, 30, 0.6);
-      transition: all 0.4s;
-    }
-
-    .download-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 15px 35px rgba(200, 30, 30, 0.8);
-    }
-
     .small-text {
       margin-top: 4rem;
       opacity: 0.65;
@@ -256,12 +222,10 @@
 
   <div class="particles" id="particles"></div>
 
-  <!-- Hamburger Toggle -->
-  <label class="menu-toggle" for="menu-check">
-    <input type="checkbox" id="menu-check" />
-    <div class="hamburger">
-      <span></span>
-    </div>
+  <!-- Checkbox + Label (input first for sibling selector) -->
+  <input type="checkbox" id="menu-check" />
+  <label for="menu-check" class="menu-toggle">
+    <div class="hamburger"></div>
   </label>
 
   <!-- Side Menu -->
@@ -270,7 +234,7 @@
       <a href="https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip" download>Download (ZIP)</a>
     </div>
     <div class="menu-item">
-      <span>Changelog</span>
+      Changelog
       <div class="changelog">
         <h3>Xinject Executor Changelog</h3>
         <ul>
