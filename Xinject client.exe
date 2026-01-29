@@ -12,7 +12,7 @@ namespace InitStarter
     static class Program
     {
         // DLL import
-        [DllImport("init start.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("Xinject_Inject_api.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void Init(string msg);
 
         private static readonly HttpClient httpClient = new HttpClient();
@@ -103,7 +103,7 @@ namespace InitStarter
             // Define files to check - add all files your application needs
             string[] requiredFiles = new[]
             {
-                "init start.dll",
+                "Xinject_Inject_api.dll",
                 "Xinject client.exe",  // Based on your GitHub link
                 // Add other required files here
             };
