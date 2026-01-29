@@ -19,6 +19,7 @@
       overflow-x: hidden;
     }
 
+    /* Particles */
     .particles {
       position: fixed;
       inset: 0;
@@ -76,58 +77,178 @@
     .subtitle {
       font-size: clamp(1.3rem, 4.5vw, 2rem);
       opacity: 0.85;
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
       text-shadow: 0 0 20px rgba(255, 100, 100, 0.7);
+      text-align: center;
+    }
+
+    /* Hamburger Menu */
+    .menu-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+    }
+
+    .menu-toggle input {
+      display: none;
+    }
+
+    .hamburger {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hamburger span {
+      position: relative;
+      display: block;
+      width: 30px;
+      height: 3px;
+      background: #ff4d4d;
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
+      transition: all 0.4s;
+    }
+
+    .hamburger span::before,
+    .hamburger span::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 3px;
+      background: #ff4d4d;
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
+      transition: all 0.4s;
+    }
+
+    .hamburger span::before {
+      top: -10px;
+    }
+
+    .hamburger span::after {
+      bottom: -10px;
+    }
+
+    #menu-check:checked ~ .hamburger span {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    #menu-check:checked ~ .hamburger span::before {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    #menu-check:checked ~ .hamburger span::after {
+      transform: rotate(-45deg) translate(8px, -8px);
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100%;
+      background: rgba(30, 0, 0, 0.95);
+      backdrop-filter: blur(8px);
+      border-left: 2px solid #c41e1e;
+      box-shadow: -10px 0 30px rgba(200, 30, 30, 0.6);
+      transition: right 0.5s ease;
+      z-index: 90;
+      padding: 5rem 2rem 2rem;
+      color: #ffcccc;
+      overflow-y: auto;
+    }
+
+    #menu-check:checked ~ .side-menu {
+      right: 0;
+    }
+
+    .menu-item {
+      margin: 1.5rem 0;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .menu-item:hover {
+      color: #ff4d4d;
+      text-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
+    }
+
+    .menu-item a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+    }
+
+    .changelog {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: rgba(70, 0, 0, 0.6);
+      border-radius: 12px;
+      border: 1px solid #c41e1e;
+    }
+
+    .changelog h3 {
+      color: #ff9999;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #c41e1e;
+      padding-bottom: 0.5rem;
+    }
+
+    .changelog ul {
+      list-style: none;
+      padding-left: 1.2rem;
+    }
+
+    .changelog li {
+      margin: 0.8rem 0;
+      position: relative;
+    }
+
+    .changelog li::before {
+      content: "•";
+      color: #ff4d4d;
+      position: absolute;
+      left: -1.2rem;
+      font-size: 1.5rem;
     }
 
     .download-btn {
-      position: relative;
-      padding: 1.4rem 4rem;
-      font-size: 1.7rem;
+      display: block;
+      margin: 2rem auto;
+      padding: 1rem 2.5rem;
+      font-size: 1.4rem;
       font-weight: bold;
       color: white;
-      background: linear-gradient(45deg, #c41e1e, #e63939, #c41e1e);
+      background: linear-gradient(45deg, #c41e1e, #e63939);
       border: none;
-      border-radius: 999px;
-      cursor: pointer;
+      border-radius: 50px;
+      text-align: center;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 12px 35px rgba(200, 30, 30, 0.6);
-      transition: all 0.4s ease;
-      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(200, 30, 30, 0.6);
+      transition: all 0.4s;
     }
 
     .download-btn:hover {
-      transform: translateY(-8px) scale(1.08);
-      box-shadow: 0 25px 50px rgba(200, 30, 30, 0.8);
-      background: linear-gradient(45deg, #e63939, #ff4d4d, #e63939);
-    }
-
-    .download-btn::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
-      animation: shine 7s infinite linear;
-    }
-
-    @keyframes shine {
-      0%   { transform: translateX(-120%) translateY(-50%); }
-      50%  { transform: translateX(120%) translateY(-50%); }
-      100% { transform: translateX(120%) translateY(-50%); }
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(200, 30, 30, 0.8);
     }
 
     .small-text {
       margin-top: 4rem;
       opacity: 0.65;
-      font-size: 1.1rem;
+      font-size: 1rem;
       text-align: center;
-      max-width: 500px;
     }
   </style>
 </head>
@@ -135,24 +256,41 @@
 
   <div class="particles" id="particles"></div>
 
+  <!-- Hamburger Toggle -->
+  <label class="menu-toggle" for="menu-check">
+    <input type="checkbox" id="menu-check" />
+    <div class="hamburger">
+      <span></span>
+    </div>
+  </label>
+
+  <!-- Side Menu -->
+  <div class="side-menu">
+    <div class="menu-item">
+      <a href="https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip" download>Download (ZIP)</a>
+    </div>
+    <div class="menu-item">
+      <span>Changelog</span>
+      <div class="changelog">
+        <h3>Xinject Executor Changelog</h3>
+        <ul>
+          <li><strong>Beta 0.1 (Current)</strong> - Initial release: Basic installer.exe, Roblox injection support, reddish GUI loader</li>
+          <li><strong>Upcoming v0.2</strong> - One-time injection (loader closes after inject), in-game ScreenGui menu</li>
+          <li><strong>Planned v0.3</strong> - FPS unlocker, disable Robux purchases, KittyScripts browser (Blox Fruits focus)</li>
+          <li><strong>v1.0 Goal</strong> - Full script hub, auto-attach, stealth mode, multi-game profiles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
     <h1 class="title">Xinject<span style="font-size:0.55em; opacity:0.9">/windows</span></h1>
     
-    <p class="subtitle">powerful Roblox injection & executor • includes GUI + installer</p>
-
-    <a 
-      href="https://github.com/zxkuhl/Xinject-Windows-/archive/refs/heads/main.zip"
-      class="download-btn"
-      download
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Download Xinject (ZIP)
-    </a>
+    <p class="subtitle">powerful Roblox injection & executor • one-click ZIP download</p>
 
     <p class="small-text">
-      Get everything: installer.exe, landing page, README + future updates<br>
-      x64 Windows • Beta • Report bugs in Discord • Use at your own risk
+      Includes: installer.exe, GUI files, README + updates<br>
+      x64 Windows • Beta • Join Discord for bugs & scripts • Use at your own risk
     </p>
   </div>
 
