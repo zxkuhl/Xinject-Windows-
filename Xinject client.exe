@@ -9,12 +9,47 @@ using System.Text.Json;
 
 namespace InitStarter
 {
+using System.Diagnostics;
+
+static class Native
+{
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern IntPtr LoadLibrary(string lpFileName);
+
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void InitDelegate(string msg);
+
+    private static InitDelegate _init;
+
+    public static void Init(string msg)
+    {
+        if (_init == null)
+        {
+            string dllName = Environment.Is64BitProcess
+                ? "Xinject_Inject_api.dll"   // x64 version
+                : "Xinject_Inject_api.dll";  // x86 version (same name or change if needed)
+
+            IntPtr lib = LoadLibrary(dllName);
+            if (lib == IntPtr.Zero)
+                throw new Exception("Failed to load DLL");
+
+            IntPtr proc = GetProcAddress(lib, "Init");
+            if (proc == IntPtr.Zero)
+                throw new Exception("Init export not found");
+
+            _init = Marshal.GetDelegateForFunctionPointer<InitDelegate>(proc);
+        }
+
+        _init(msg);
+    }
+}
+
     static class Program
     {
-        // DLL import
-        [DllImport("Xinject_Inject_api.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Init(string msg);
-
+     
         private static readonly HttpClient httpClient = new HttpClient();
         
         // Your GitHub repository configuration
