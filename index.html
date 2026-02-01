@@ -5,9 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="theme-color" content="#1a0000"/>
-  <title>Xinject/windows</title>
+  <meta name="theme-color" content="#0a001a"/>
+  <title>Xinject // Windows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-purple: #9d4edd;
+      --neon-purple: #c77dff;
+      --deep-bg: #0a001a;
+      --accent-glow: rgba(157, 78, 221, 0.5);
+      --terminal-green: #00ff41; /* for subtle code accents */
+    }
+
     * { 
       margin: 0; 
       padding: 0; 
@@ -15,59 +24,50 @@
       -webkit-tap-highlight-color: transparent;
     }
     
-    html {
+    html, body {
       height: 100%;
       width: 100%;
-      position: fixed;
-      overflow: hidden;
-    }
-    
-    body {
-      height: 100%;
-      width: 100%;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      background: linear-gradient(135deg, #1a0000, #330000, #4d0000);
-      color: #ffcccc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--deep-bg);
+      color: #e0aaff;
+      font-family: 'Fira Code', monospace;
       overflow: hidden;
       position: fixed;
-      -webkit-overflow-scrolling: touch;
     }
 
+    /* Scanline Overlay Effect */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 20;
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+    }
+
+    /* Floating Digital Bits */
     .particles { 
       position: fixed; 
       inset: 0; 
       pointer-events: none; 
       z-index: 1;
-      overflow: hidden;
+      opacity: 0.4;
     }
     
-    .particle {
+    .bit {
       position: absolute; 
-      background: rgba(255,80,80,0.6); 
-      border-radius: 50%;
-      box-shadow: 0 0 12px rgba(255,60,60,0.7); 
-      animation: float linear infinite; 
-      opacity: 0;
-      will-change: transform, opacity;
+      color: var(--primary-purple);
+      font-size: 10px;
+      animation: fall linear infinite; 
+      will-change: transform;
     }
     
-    @keyframes float { 
-      0% {
-        transform: translateY(100vh) scale(0.3); 
-        opacity: 0;
-      } 
-      10% {
-        opacity: 0.7;
-      } 
-      90% {
-        opacity: 0.7;
-      } 
-      100% {
-        transform: translateY(-20vh) scale(0.6); 
-        opacity: 0;
-      } 
+    @keyframes fall { 
+      0% { transform: translateY(-10vh); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(110vh); opacity: 0; } 
     }
 
     .scroll-container {
@@ -76,13 +76,10 @@
       z-index: 10;
       overflow-y: auto;
       overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
     }
 
     .container {
       min-height: 100vh;
-      min-height: 100dvh;
       display: flex; 
       flex-direction: column;
       align-items: center; 
@@ -90,322 +87,145 @@
       padding: 2rem 1.5rem;
       text-align: center;
     }
-    
-    .title {
-      font-size: clamp(2.8rem, 10vw, 8rem); 
-      font-weight: 900;
-      background: linear-gradient(90deg, #ff4d4d, #ff9999, #ff4d4d);
-      -webkit-background-clip: text; 
-      background-clip: text; 
-      color: transparent;
-      background-size: 300% 300%; 
-      animation: titleFlow 8s ease-in-out infinite;
-      text-shadow: 0 0 25px rgba(255,70,70,0.8); 
-      margin-bottom: 1rem;
-      line-height: 1.1;
-    }
-    
-    @keyframes titleFlow { 
-      0%, 100% {
-        background-position: 0% 50%;
-      } 
-      50% {
-        background-position: 100% 50%;
-      } 
-    }
-    
-    .subtitle { 
-      font-size: clamp(1rem, 4vw, 1.6rem); 
-      opacity: 0.9; 
-      margin-bottom: 1.5rem; 
-      max-width: 90%;
-      line-height: 1.4;
-    }
-    
-    .small-text { 
-      font-size: clamp(0.85rem, 3.5vw, 1rem); 
-      opacity: 0.7; 
-      max-width: 90%;
-      line-height: 1.5;
+
+    /* Logo Styling */
+    .logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 1.5rem;
+      filter: drop-shadow(0 0 15px var(--primary-purple));
+      animation: pulse 4s ease-in-out infinite;
     }
 
-    /* Menu Toggle Button */
-    #menu-check { 
-      display: none; 
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--primary-purple)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 25px var(--neon-purple)); }
     }
+    
+    .title {
+      font-size: clamp(2.5rem, 8vw, 6rem); 
+      font-weight: 700;
+      letter-spacing: -2px;
+      color: #fff;
+      text-shadow: 0 0 10px var(--primary-purple), 0 0 20px var(--primary-purple);
+      margin-bottom: 0.5rem;
+    }
+
+    .glitch-text {
+        position: relative;
+        display: inline-block;
+    }
+
+    .subtitle { 
+      font-size: clamp(0.9rem, 3vw, 1.2rem); 
+      color: var(--neon-purple);
+      margin-bottom: 2rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Menu Toggle */
+    #menu-check { display: none; }
     
     .menu-toggle {
       position: fixed; 
-      top: 1rem; 
-      right: 1rem; 
+      top: 1.5rem; 
+      right: 1.5rem; 
       z-index: 10001;
-      width: 56px; 
-      height: 56px; 
-      cursor: pointer; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      transform: translate3d(0,0,0);
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      background: rgba(255, 77, 77, 0.1);
-      border-radius: 12px;
-      transition: background 0.3s ease;
-    }
-
-    .menu-toggle:active {
-      background: rgba(255, 77, 77, 0.2);
+      width: 50px; height: 50px;
+      background: rgba(157, 78, 221, 0.15);
+      border: 1px solid var(--primary-purple);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
     }
     
     .hamburger {
-      position: relative; 
-      width: 32px; 
-      height: 3px; 
-      background: #ff4d4d; 
-      border-radius: 3px;
-      box-shadow: 0 0 15px rgba(255,77,77,0.9); 
-      transition: all 0.3s ease;
-      transform: translate3d(0,0,0);
+      width: 25px; height: 2px;
+      background: var(--neon-purple);
+      position: relative;
+      transition: 0.3s;
     }
-    
     .hamburger::before, .hamburger::after {
-      content: ''; 
-      position: absolute; 
-      width: 32px; 
-      height: 3px; 
-      background: #ff4d4d;
-      border-radius: 3px; 
-      box-shadow: 0 0 15px rgba(255,77,77,0.9); 
-      transition: all 0.3s ease;
+      content: ''; position: absolute; width: 25px; height: 2px; background: var(--neon-purple); left: 0; transition: 0.3s;
     }
-    
-    .hamburger::before { 
-      top: -10px; 
-    } 
-    
-    .hamburger::after { 
-      bottom: -10px; 
-    }
-    
-    #menu-check:checked + .menu-toggle .hamburger { 
-      background: transparent; 
-      box-shadow: none; 
-    }
-    
-    #menu-check:checked + .menu-toggle .hamburger::before { 
-      transform: rotate(45deg) translate(7px, 7px); 
-    }
-    
-    #menu-check:checked + .menu-toggle .hamburger::after { 
-      transform: rotate(-45deg) translate(7px, -7px); 
-    }
+    .hamburger::before { top: -8px; }
+    .hamburger::after { bottom: -8px; }
+
+    #menu-check:checked + .menu-toggle .hamburger { background: transparent; }
+    #menu-check:checked + .menu-toggle .hamburger::before { transform: rotate(45deg); top: 0; }
+    #menu-check:checked + .menu-toggle .hamburger::after { transform: rotate(-45deg); bottom: 0; }
 
     /* Side Menu */
     .side-menu {
-      position: fixed; 
-      top: 0;
-      right: 0;
-      bottom: 0;
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 100%; max-width: 350px;
+      background: rgba(10, 0, 26, 0.95);
+      border-left: 1px solid var(--primary-purple);
       transform: translateX(100%);
-      width: 100%; 
-      max-width: 400px;
-      background: rgba(30,0,0,0.98);
-      backdrop-filter: blur(12px); 
-      -webkit-backdrop-filter: blur(12px);
-      transition: transform 0.4s cubic-bezier(0.25,0.8,0.25,1); 
+      transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 10000;
-      overflow-y: auto; 
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      transform: translate3d(100%, 0, 0);
-      overscroll-behavior: contain;
+      padding: 6rem 2rem 2rem;
     }
 
-    .side-menu-content {
-      padding: 5rem 1.5rem 2rem;
-      min-height: 100%;
-    }
-    
-    #menu-check:checked ~ .side-menu { 
-      transform: translate3d(0, 0, 0);
-    }
+    #menu-check:checked ~ .side-menu { transform: translateX(0); }
 
-    /* Menu Overlay */
-    .menu-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      z-index: 9999;
-    }
-
-    #menu-check:checked ~ .menu-overlay {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .menu-item { 
-      margin: 1.5rem 0; 
-      font-size: clamp(1.3rem, 5vw, 1.8rem); 
-      font-weight: bold; 
-      transition: all 0.3s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    .menu-item:active { 
-      color: #ff4d4d; 
-      text-shadow: 0 0 20px rgba(255,77,77,0.9); 
-    }
-    
-    .menu-item a { 
-      color: inherit; 
-      text-decoration: none; 
+    .menu-item a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
       display: block;
-      padding: 0.5rem;
-      -webkit-tap-highlight-color: transparent;
+      padding: 1rem;
+      border: 1px solid transparent;
+      transition: 0.3s;
+      margin-bottom: 1rem;
     }
 
-    .menu-item a:active {
-      color: #ff4d4d;
+    .menu-item a:hover {
+      background: rgba(157, 78, 221, 0.1);
+      border-color: var(--primary-purple);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .changelog {
+      background: rgba(0,0,0,0.4);
+      padding: 1rem;
+      border: 1px solid #3c096c;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      color: #b392ac;
+    }
+
+    .changelog h3 { color: var(--neon-purple); margin-bottom: 0.5rem; font-size: 1rem; }
+    .changelog ul { list-style: none; }
+    .changelog li { margin-bottom: 0.5rem; }
+    .changelog li::before { content: "> "; color: var(--primary-purple); }
+
+    /* Buttons / Links */
+    .btn-download {
+        background: var(--primary-purple);
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        box-shadow: 0 0 20px var(--accent-glow);
+        transition: 0.3s;
+        display: inline-block;
+        margin-top: 1rem;
     }
     
-    .changelog { 
-      margin-top: 2rem; 
-      padding: 1.5rem; 
-      background: rgba(70,0,0,0.65); 
-      border-radius: 12px; 
-      border: 1px solid #c41e1e; 
-      font-size: clamp(0.95rem, 3.5vw, 1.1rem);
-    }
-    
-    .changelog h3 { 
-      color: #ff9999; 
-      margin-bottom: 1rem; 
-      font-size: clamp(1.2rem, 4vw, 1.4rem);
-    }
-    
-    .changelog ul { 
-      list-style: none; 
-      padding-left: 0.5rem;
-    }
-    
-    .changelog li { 
-      margin: 1rem 0; 
-      position: relative; 
-      padding-left: 1.5rem;
-      line-height: 1.5;
-    }
-    
-    .changelog li::before { 
-      content: "•"; 
-      color: #ff4d4d; 
-      position: absolute; 
-      left: 0; 
-      font-size: 1.5rem;
-      line-height: 1;
+    .btn-download:hover {
+        background: var(--neon-purple);
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px var(--primary-purple);
     }
 
-    /* Desktop styles */
-    @media (min-width: 768px) { 
-      .container { 
-        padding: 3rem; 
-      } 
-      
-      .side-menu { 
-        width: 400px;
-        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
-      }
-
-      .menu-toggle:hover {
-        background: rgba(255, 77, 77, 0.2);
-      }
-
-      .menu-item:hover { 
-        color: #ff4d4d; 
-        text-shadow: 0 0 20px rgba(255,77,77,0.9); 
-      }
-    }
-
-    /* Mobile optimizations */
-    @media (max-width: 767px) { 
-      .particle { 
-        animation-duration: 15s; 
-      }
-
-      .title {
-        font-size: clamp(2.5rem, 12vw, 4rem);
-      }
-
-      .menu-toggle {
-        top: 0.75rem;
-        right: 0.75rem;
-        width: 52px;
-        height: 52px;
-      }
-
-      .side-menu {
-        width: 100%;
-      }
-    }
-
-    /* Extra small devices */
-    @media (max-width: 380px) {
-      .container {
-        padding: 1.5rem 1rem;
-      }
-
-      .title {
-        font-size: 2.2rem;
-      }
-
-      .subtitle {
-        font-size: 0.95rem;
-      }
-
-      .small-text {
-        font-size: 0.8rem;
-      }
-    }
-
-    /* Landscape mobile */
-    @media (max-height: 500px) and (orientation: landscape) {
-      .container {
-        justify-content: flex-start;
-        padding-top: 1rem;
-      }
-
-      .title {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .subtitle {
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .small-text {
-        font-size: 0.75rem;
-      }
-    }
-
-    /* Safe area for notched devices */
-    @supports (padding: max(0px)) {
-      .menu-toggle {
-        top: max(1rem, env(safe-area-inset-top));
-        right: max(1rem, env(safe-area-inset-right));
-      }
-
-      .side-menu-content {
-        padding-top: max(5rem, calc(env(safe-area-inset-top) + 4rem));
-        padding-bottom: max(2rem, env(safe-area-inset-bottom));
-        padding-left: max(1.5rem, env(safe-area-inset-left));
-        padding-right: max(1.5rem, env(safe-area-inset-right));
-      }
+    /* Mobile specific adjustment */
+    @media (max-width: 768px) {
+      .logo { width: 90px; }
+      .side-menu { max-width: 100%; }
     }
   </style>
 </head>
@@ -414,144 +234,91 @@
   <div class="particles" id="particles"></div>
 
   <input type="checkbox" id="menu-check" />
-  
-  <label for="menu-check" class="menu-toggle" aria-label="Toggle menu">
+  <label for="menu-check" class="menu-toggle">
     <div class="hamburger"></div>
   </label>
 
-  <div class="menu-overlay" id="menu-overlay"></div>
-
   <div class="side-menu">
-    <div class="side-menu-content">
-      <div class="menu-item">
-        <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" download="Xinject installer.exe">
-          Download Xinject Installer (.exe)
-        </a>
-      </div>
-      <div class="menu-item">
-        Changelog
-        <div class="changelog">
-          <h3>Xinject Executor Changelog</h3>
-          <ul>
-            <li><strong>Beta 0.1 (Current)</strong> - Initial release: Basic installer.exe, Roblox injection support, reddish GUI loader</li>
-            <li><strong>Upcoming v0.2</strong> - One-time injection, in-game ScreenGui menu</li>
-            <li><strong>Planned v0.3</strong> - FPS unlocker, disable Robux purchases, script browser</li>
-            <li><strong>v1.0 Goal</strong> - Full script hub, stealth features, multi-game support</li>
-          </ul>
-        </div>
-      </div>
+    <div class="menu-item">
+      <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" download>
+        [ DOWNLOAD_STABLE.EXE ]
+      </a>
+    </div>
+    <div class="changelog">
+      <h3>SYSTEM_LOG</h3>
+      <ul>
+        <li>Beta 0.1: Native Injection enabled</li>
+        <li>Update 0.2: One-time stealth bypass</li>
+        <li>Roadmap: FPS_Unlocker.sys integration</li>
+      </ul>
     </div>
   </div>
 
   <div class="scroll-container">
     <div class="container">
-      <h1 class="title">Xinject<span style="font-size:0.6em; opacity:0.9">/windows</span></h1>
-      <p class="subtitle">Powerful Roblox executor & injector • Direct .exe download</p>
-      <p class="small-text">
-        Download Xinject installer.exe directly • x64 Windows Beta<br>
-        Join Discord for bugs/scripts • Use at your own risk
+      <img src="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/X%20logo.png" alt="Xinject Logo" class="logo">
+      
+      <h1 class="title">XINJECT<span style="color:var(--primary-purple)">_</span></h1>
+      <p class="subtitle">Windows Kernel Executor // v0.1b</p>
+      
+      <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" class="btn-download">INITIALIZE DOWNLOAD</a>
+      
+      <p style="margin-top: 2rem; font-size: 0.7rem; opacity: 0.5; max-width: 300px;">
+        AUTH_TOKEN: REQUIRED<br>
+        STATUS: UNDETECTED<br>
+        ENVIRONMENT: X64_WIN_BETA
       </p>
     </div>
   </div>
 
   <script>
-    // Close menu when clicking overlay
-    const menuOverlay = document.getElementById('menu-overlay');
-    const menuCheck = document.getElementById('menu-check');
-    
-    menuOverlay.addEventListener('click', function(e) {
-      if (e.target === menuOverlay) {
-        menuCheck.checked = false;
-      }
-    });
+    // Advanced Particle System - Code Bits
+    const container = document.getElementById('particles');
+    const codeSnippets = ['0', '1', '{ }', '=>', 'NULL', 'VOID', 'INT', '0x1A'];
+    const maxParticles = 40;
+    let currentParticles = 0;
 
-    // Prevent body scroll when menu is open
-    menuCheck.addEventListener('change', function() {
-      if (this.checked) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-    });
-
-    // Close menu when clicking download link
-    const downloadLink = document.querySelector('.menu-item a');
-    if (downloadLink) {
-      downloadLink.addEventListener('click', function() {
-        setTimeout(() => {
-          menuCheck.checked = false;
-        }, 300);
-      });
-    }
-
-    // Particle system with better mobile performance
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 767;
-    const particleContainer = document.getElementById('particles');
-    const spawnInterval = isMobile ? 1200 : 280;
-    const initialBurst = isMobile ? 4 : 18;
-    const maxParticles = isMobile ? 15 : 50;
-    let particleCount = 0;
-
-    function createParticle() {
-      if (particleCount >= maxParticles) return;
-
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = Math.random() * (isMobile ? 4 : 5) + (isMobile ? 2 : 3);
-      p.style.width = size + 'px';
-      p.style.height = size + 'px';
-      p.style.left = Math.random() * 100 + 'vw';
-      const duration = Math.random() * 12 + (isMobile ? 15 : 10);
-      p.style.animationDuration = duration + 's';
-      p.style.animationDelay = Math.random() * 3 + 's';
+    function createBit() {
+      if (currentParticles >= maxParticles) return;
       
-      particleContainer.appendChild(p);
-      particleCount++;
+      const bit = document.createElement('div');
+      bit.className = 'bit';
+      bit.innerText = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+      
+      const left = Math.random() * 100;
+      const duration = 5 + Math.random() * 10;
+      const size = 10 + Math.random() * 10;
+      
+      bit.style.left = left + 'vw';
+      bit.style.animationDuration = duration + 's';
+      bit.style.fontSize = size + 'px';
+      bit.style.opacity = Math.random();
+      
+      container.appendChild(bit);
+      currentParticles++;
 
       setTimeout(() => {
-        p.remove();
-        particleCount--;
-      }, (duration + 3) * 1000);
+        bit.remove();
+        currentParticles--;
+      }, duration * 1000);
     }
 
-    // Initial burst
-    for (let i = 0; i < initialBurst; i++) {
-      setTimeout(createParticle, i * 300);
+    // Initialize
+    for(let i=0; i<20; i++) {
+        setTimeout(createBit, i * 200);
     }
+    setInterval(createBit, 400);
 
-    // Continuous spawning
-    setInterval(createParticle, spawnInterval);
-
-    // Pause animations when page is hidden (battery saving)
-    document.addEventListener('visibilitychange', function() {
-      if (document.hidden) {
-        particleContainer.style.animationPlayState = 'paused';
-        document.querySelectorAll('.particle').forEach(p => {
-          p.style.animationPlayState = 'paused';
-        });
-      } else {
-        particleContainer.style.animationPlayState = 'running';
-        document.querySelectorAll('.particle').forEach(p => {
-          p.style.animationPlayState = 'running';
-        });
-      }
-    });
-
-    // Handle viewport height changes (mobile address bar)
-    let vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-    window.addEventListener('resize', () => {
-      let vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    });
-
-    // Improve touch response
-    if ('ontouchstart' in window) {
-      document.querySelectorAll('.menu-item, .menu-toggle').forEach(el => {
-        el.addEventListener('touchstart', function() {}, {passive: true});
-      });
-    }
+    // Subtle Title Glitch Effect
+    const title = document.querySelector('.title');
+    setInterval(() => {
+        if(Math.random() > 0.95) {
+            title.style.textShadow = '2px 0 #ff00ff, -2px 0 #00ffff';
+            setTimeout(() => {
+                title.style.textShadow = '0 0 10px var(--primary-purple), 0 0 20px var(--primary-purple)';
+            }, 100);
+        }
+    }, 500);
   </script>
 </body>
 </html>
