@@ -1,2074 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KittyScripts - Script Hub</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#0a001a"/>
+  <title>Xinject // Windows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-purple: #9d4edd;
+      --neon-purple: #c77dff;
+      --deep-bg: #0a001a;
+      --accent-glow: rgba(157, 78, 221, 0.5);
+      --terminal-green: #00ff41; /* for subtle code accents */
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jayzioncheeks/KittyScripts-Hub/refs/heads/main/Untitled30_20260227180647.png">
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--deep-bg);
+      color: #e0aaff;
+      font-family: 'Fira Code', monospace;
+      overflow: hidden;
+      position: fixed;
+    }
+
+    /* Scanline Overlay Effect */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 20;
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+    }
+
+    /* Floating Digital Bits */
+    .particles { 
+      position: fixed; 
+      inset: 0; 
+      pointer-events: none; 
+      z-index: 1;
+      opacity: 0.4;
+    }
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    .bit {
+      position: absolute; 
+      color: var(--primary-purple);
+      font-size: 10px;
+      animation: fall linear infinite; 
+      will-change: transform;
+    }
     
-    <style>
-        :root {
-            --bg-base: #0a0612;
-            --bg-elevated: #120a1f;
-            --bg-card: #1a0f2e;
-            --accent-primary: #7c3aed;
-            --accent-glow: rgba(124, 58, 237, 0.25);
-            --accent-bright: #a78bfa;
-            --text-primary: #f8f8f9;
-            --text-muted: #9f93b3;
-            --text-dim: #6e5f88;
-            --border-subtle: #2a1a3f;
-            --border-bright: #3d2554;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #8b5cf6;
-        }
+    @keyframes fall { 
+      0% { transform: translateY(-10vh); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(110vh); opacity: 0; } 
+    }
 
-        [data-theme="light"] {
-            --bg-base: #faf8fc;
-            --bg-elevated: #f3f0f7;
-            --bg-card: #ffffff;
-            --accent-primary: #7c3aed;
-            --accent-glow: rgba(124, 58, 237, 0.15);
-            --accent-bright: #a78bfa;
-            --text-primary: #1a0f2e;
-            --text-muted: #6e5f88;
-            --text-dim: #9f93b3;
-            --border-subtle: #e5dff0;
-            --border-bright: #d1c7e0;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #8b5cf6;
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: var(--bg-base);
-            color: var(--text-primary);
-            font-family: 'Syne', sans-serif;
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: 
-                radial-gradient(circle at 20% 50%, var(--accent-glow) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            animation: gradientShift 20s ease infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(5%, 5%) rotate(120deg); }
-            66% { transform: translate(-5%, 5%) rotate(240deg); }
-        }
+    .scroll-container {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-        /* ── Theme Toggle ── */
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem; right: 2rem;
-            width: 54px; height: 54px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            border: none;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 24px var(--accent-glow);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-        }
-        .theme-toggle:hover { transform: scale(1.1) rotate(10deg); }
-        .theme-toggle svg { width: 24px; height: 24px; fill: white; }
-        .theme-toggle .sun-icon { display: none; }
-        .theme-toggle .moon-icon { display: block; }
-        [data-theme="light"] .theme-toggle .sun-icon { display: block; }
-        [data-theme="light"] .theme-toggle .moon-icon { display: none; }
+    .container {
+      min-height: 100vh;
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
 
-        /* ── Navbar ── */
-        .navbar {
-            position: sticky; top: 0; z-index: 100;
-            display: flex; align-items: center;
-            padding: 1rem 3rem;
-            backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(18, 10, 31, 0.85);
-            border-bottom: 1px solid var(--border-subtle);
-            transition: background 0.3s ease, border-color 0.3s ease;
-            overflow-x: auto; scrollbar-width: none;
-        }
-        .navbar::-webkit-scrollbar { display: none; }
-        [data-theme="light"] .navbar { background: rgba(243, 240, 247, 0.95); }
-        .navbar::after {
-            content: '';
-            position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary) 30%, var(--accent-primary) 70%, transparent);
-            opacity: 0.3;
-        }
+    /* Logo Styling */
+    .logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 1.5rem;
+      filter: drop-shadow(0 0 15px var(--primary-purple));
+      animation: pulse 4s ease-in-out infinite;
+    }
 
-        .social-bar {
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 3rem;
-            background: rgba(18, 10, 31, 0.85);
-            border-bottom: 1px solid var(--border-subtle);
-            position: sticky; top: 58px; z-index: 99;
-            backdrop-filter: blur(20px);
-        }
-        [data-theme="light"] .social-bar { background: rgba(243, 240, 247, 0.95); }
-        
-        .tabs { display: flex; gap: 0.75rem; position: relative; }
-        .tab {
-            padding: 0.625rem 1.5rem;
-            cursor: pointer; border-radius: 10px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600; font-size: 0.95rem;
-            letter-spacing: 0.02em;
-            border: 1px solid transparent; background: transparent;
-        }
-        .tab:hover { color: var(--accent-bright); transform: translateY(-1px); }
-        .tab.active {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            color: white;
-            box-shadow: 0 8px 24px var(--accent-glow);
-        }
-        
-        .social-buttons { display: flex; gap: 0.5rem; }
-        .discord-icon-btn, .youtube-icon-btn, .tiktok-icon-btn, .keysystem-icon-btn {
-            display: flex; align-items: center; justify-content: center;
-            border: none; padding: 0.625rem; border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; overflow: hidden;
-            width: 44px; height: 44px;
-        }
-        .discord-icon-btn { background: linear-gradient(135deg, #5865f2, #7289da); box-shadow: 0 4px 16px rgba(88,101,242,0.25); }
-        .youtube-icon-btn { background: linear-gradient(135deg, #ff0000, #cc0000); box-shadow: 0 4px 16px rgba(255,0,0,0.25); }
-        .tiktok-icon-btn { background: linear-gradient(135deg, #000000, #ff0050); box-shadow: 0 4px 16px rgba(255,0,80,0.25); }
-        .keysystem-icon-btn { background: transparent; border: 1px solid var(--border-subtle); }
-        .discord-icon-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 24px rgba(88,101,242,0.4); }
-        .youtube-icon-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 24px rgba(255,0,0,0.4); }
-        .tiktok-icon-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 24px rgba(255,0,80,0.4); }
-        .keysystem-icon-btn:hover { transform: translateY(-2px) scale(1.02); border-color: var(--accent-primary); }
-        .discord-icon, .youtube-icon, .tiktok-icon, .keysystem-icon { width: 20px; height: 20px; fill: white; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--primary-purple)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 25px var(--neon-purple)); }
+    }
+    
+    .title {
+      font-size: clamp(2.5rem, 8vw, 6rem); 
+      font-weight: 700;
+      letter-spacing: -2px;
+      color: #fff;
+      text-shadow: 0 0 10px var(--primary-purple), 0 0 20px var(--primary-purple);
+      margin-bottom: 0.5rem;
+    }
 
-        /* ── Content ── */
-        .content {
-            max-width: 1400px; margin: 0 auto;
-            padding: 3rem 2rem;
-            position: relative; z-index: 1;
-        }
+    .glitch-text {
+        position: relative;
+        display: inline-block;
+    }
 
-        /* ── Main Tab ── */
-        #mainTab {
-            text-align: center; padding: 6rem 2rem;
-            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #mainTab h1 {
-            font-size: clamp(3rem, 8vw, 6rem); font-weight: 800;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent-primary) 30%, #a855f7 60%, var(--accent-primary) 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-            animation: gradientFlow 8s ease infinite;
-            letter-spacing: -0.03em; line-height: 1.1;
-        }
-        @keyframes gradientFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        .logo-container { position: relative; display: inline-block; margin: 2rem 0; }
-        .logo-container::before {
-            content: '';
-            position: absolute; inset: -20px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            border-radius: 50%; animation: pulse 3s ease-in-out infinite; z-index: -1;
-        }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
-        #mainTab img {
-            width: 240px; height: auto; border-radius: 24px;
-            box-shadow: 0 0 60px var(--accent-glow), 0 20px 60px rgba(0,0,0,0.5);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--border-bright);
-        }
-        #mainTab img:hover { transform: scale(1.05) translateY(-5px); }
-        .tagline { font-size: 1.25rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2rem; }
-        .tagline span { display: inline-block; animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards; }
-        .tagline span:nth-child(1) { animation-delay: 0.2s; }
-        .tagline span:nth-child(2) { animation-delay: 0.3s; color: var(--accent-bright); }
-        .tagline span:nth-child(3) { animation-delay: 0.4s; }
-        .tagline span:nth-child(4) { animation-delay: 0.5s; color: var(--accent-bright); }
-        .tagline span:nth-child(5) { animation-delay: 0.6s; }
+    .subtitle { 
+      font-size: clamp(0.9rem, 3vw, 1.2rem); 
+      color: var(--neon-purple);
+      margin-bottom: 2rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
 
-        /* ── Scripts Tab ── */
-        #scriptsTab { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .script-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 3rem; padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            position: relative;
-        }
-        .script-header::after {
-            content: ''; position: absolute; bottom: -1px; left: 0;
-            width: 120px; height: 2px;
-            background: linear-gradient(90deg, var(--accent-primary), transparent);
-        }
-        .script-header h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; }
-        .header-left { display: flex; align-items: center; gap: 1.5rem; }
-        .search-input {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: 0.75rem 1.25rem;
-            color: var(--text-primary); font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 200px; font-family: 'Syne', sans-serif;
-        }
-        .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); width: 250px; }
-        .search-input::placeholder { color: var(--text-dim); }
-        .refresh-btn {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: 0.75rem 1rem;
-            color: var(--text-primary); cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; gap: 0.5rem;
-            font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
-        }
-        .refresh-btn:hover { border-color: var(--accent-primary); box-shadow: 0 4px 12px var(--accent-glow); }
-        .refresh-btn.loading { opacity: 0.6; pointer-events: none; }
-        .refresh-btn.loading svg { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    /* Menu Toggle */
+    #menu-check { display: none; }
+    
+    .menu-toggle {
+      position: fixed; 
+      top: 1.5rem; 
+      right: 1.5rem; 
+      z-index: 10001;
+      width: 50px; height: 50px;
+      background: rgba(157, 78, 221, 0.15);
+      border: 1px solid var(--primary-purple);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    
+    .hamburger {
+      width: 25px; height: 2px;
+      background: var(--neon-purple);
+      position: relative;
+      transition: 0.3s;
+    }
+    .hamburger::before, .hamburger::after {
+      content: ''; position: absolute; width: 25px; height: 2px; background: var(--neon-purple); left: 0; transition: 0.3s;
+    }
+    .hamburger::before { top: -8px; }
+    .hamburger::after { bottom: -8px; }
 
-        /* ── Script Grid (masonry) ── */
-        #scriptsContainer { columns: 3; column-gap: 1.5rem; }
+    #menu-check:checked + .menu-toggle .hamburger { background: transparent; }
+    #menu-check:checked + .menu-toggle .hamburger::before { transform: rotate(45deg); top: 0; }
+    #menu-check:checked + .menu-toggle .hamburger::after { transform: rotate(-45deg); bottom: 0; }
 
-        /* ── Script Card (clickable preview) ── */
-        .script-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            break-inside: avoid;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
-            position: relative;
-            overflow: hidden;
-        }
-        .script-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            opacity: 0; transition: opacity 0.4s;
-        }
-        .script-card:hover::before { opacity: 1; }
-        .script-card:hover {
-            border-color: var(--border-bright);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 48px rgba(0,0,0,0.4), 0 0 0 1px var(--border-bright);
-        }
+    /* Side Menu */
+    .side-menu {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 100%; max-width: 350px;
+      background: rgba(10, 0, 26, 0.95);
+      border-left: 1px solid var(--primary-purple);
+      transform: translateX(100%);
+      transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10000;
+      padding: 6rem 2rem 2rem;
+    }
 
-        /* Thumbnail */
-        .card-thumb-wrap {
-            width: 100%; overflow: hidden;
-            border-radius: 15px 15px 0 0;
-        }
-        .script-thumbnail {
-            width: 100%; height: 160px;
-            object-fit: cover; display: block;
-            transition: transform 0.4s ease;
-        }
-        .script-card:hover .script-thumbnail { transform: scale(1.04); }
+    #menu-check:checked ~ .side-menu { transform: translateX(0); }
 
-        /* Card body */
-        .card-body { padding: 1.4rem 1.5rem 1.5rem; }
+    .menu-item a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      display: block;
+      padding: 1rem;
+      border: 1px solid transparent;
+      transition: 0.3s;
+      margin-bottom: 1rem;
+    }
 
-        .card-top {
-            display: flex; align-items: flex-start;
-            justify-content: space-between; gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .card-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
-        .card-game { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.85rem; }
+    .menu-item a:hover {
+      background: rgba(157, 78, 221, 0.1);
+      border-color: var(--primary-purple);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
 
-        .card-snippet {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 0.7rem 0.9rem;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
+    .changelog {
+      background: rgba(0,0,0,0.4);
+      padding: 1rem;
+      border: 1px solid #3c096c;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      color: #b392ac;
+    }
 
-        .card-footer {
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 0.5rem;
-        }
-        .script-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-        .badge {
-            padding: 0.2rem 0.6rem; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.05em;
-        }
-        .badge.universal { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .badge.key-system { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-        .badge.verified { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+    .changelog h3 { color: var(--neon-purple); margin-bottom: 0.5rem; font-size: 1rem; }
+    .changelog ul { list-style: none; }
+    .changelog li { margin-bottom: 0.5rem; }
+    .changelog li::before { content: "> "; color: var(--primary-purple); }
 
-        .view-btn {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            color: white; border: none; border-radius: 8px;
-            padding: 0.45rem 1rem;
-            font-family: 'Syne', sans-serif;
-            font-size: 0.82rem; font-weight: 700;
-            cursor: pointer; white-space: nowrap;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-        .view-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px var(--accent-glow); }
+    /* Buttons / Links */
+    .btn-download {
+        background: var(--primary-purple);
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        box-shadow: 0 0 20px var(--accent-glow);
+        transition: 0.3s;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+    
+    .btn-download:hover {
+        background: var(--neon-purple);
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px var(--primary-purple);
+    }
 
-        /* ── MODAL ── */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(5, 2, 10, 0.82);
-            backdrop-filter: blur(12px) saturate(140%);
-            z-index: 5000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 1.5rem;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-        .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border-bright);
-            border-radius: 20px;
-            width: 100%; max-width: 680px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px var(--border-bright);
-            transform: translateY(30px) scale(0.97);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-        .modal-overlay.open .modal {
-            transform: translateY(0) scale(1);
-        }
-
-        .modal::-webkit-scrollbar { width: 5px; }
-        .modal::-webkit-scrollbar-track { background: transparent; }
-        .modal::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
-
-        /* Top glow stripe */
-        .modal::before {
-            content: '';
-            display: block; height: 3px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-bright), var(--accent-primary));
-            border-radius: 20px 20px 0 0;
-        }
-
-        .modal-close {
-            position: absolute; top: 1.1rem; right: 1.1rem;
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-bright);
-            color: var(--text-muted);
-            font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-        .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
-
-        .modal-thumb {
-            width: 100%; height: 220px;
-            object-fit: cover; display: block;
-        }
-        .modal-thumb-placeholder {
-            width: 100%; height: 6px;
-        }
-
-        .modal-body { padding: 1.75rem 2rem 2rem; }
-
-        .modal-title-row {
-            display: flex; align-items: flex-start;
-            justify-content: space-between; gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .modal-title { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
-        .modal-game {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            font-size: 0.88rem; color: var(--accent-bright); font-weight: 600;
-            margin-bottom: 1.25rem;
-            text-decoration: none;
-            cursor: pointer;
-            padding: 0.35rem 0.75rem;
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid rgba(167, 139, 250, 0.2);
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .modal-game:hover {
-            background: rgba(124, 58, 237, 0.2);
-            border-color: var(--accent-bright);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-        .modal-game svg { width: 14px; height: 14px; fill: var(--accent-bright); }
-        .modal-game .external-icon { fill: none; stroke: var(--accent-bright); width: 12px; height: 12px; opacity: 0.7; }
-
-        .modal-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-
-        .modal-section-label {
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--text-dim);
-            margin-bottom: 0.6rem;
-        }
-
-        .modal-code-wrap {
-            position: relative;
-            margin-bottom: 1.75rem;
-        }
-        .modal-code {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1.25rem;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.83rem;
-            color: var(--text-muted);
-            line-height: 1.65;
-            overflow-x: auto;
-            max-height: 260px;
-            overflow-y: auto;
-            white-space: pre;
-        }
-        .modal-code::-webkit-scrollbar { width: 5px; height: 5px; }
-        .modal-code::-webkit-scrollbar-track { background: transparent; }
-        .modal-code::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
-
-        .modal-actions { display: flex; gap: 0.75rem; }
-
-        .btn-copy-modal {
-            flex: 1;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            color: white; border: none; border-radius: 12px;
-            padding: 0.9rem 1.5rem;
-            font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-            box-shadow: 0 6px 20px var(--accent-glow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; overflow: hidden;
-        }
-        .btn-copy-modal::before {
-            content: '';
-            position: absolute; top: 50%; left: 50%;
-            width: 0; height: 0; border-radius: 50%;
-            background: rgba(255,255,255,0.12);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        .btn-copy-modal:active::before { width: 400px; height: 400px; }
-        .btn-copy-modal:hover { transform: translateY(-2px); box-shadow: 0 10px 28px var(--accent-glow); }
-        .btn-copy-modal svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; }
-
-        .btn-close-modal {
-            background: var(--bg-elevated); border: 1px solid var(--border-bright);
-            color: var(--text-muted); border-radius: 12px;
-            padding: 0.9rem 1.25rem;
-            font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-close-modal:hover { border-color: var(--accent-primary); color: var(--text-primary); }
-
-        /* ── Toast ── */
-        .toast {
-            position: fixed; bottom: 2rem; left: 2rem;
-            background: var(--bg-card); border: 1px solid var(--border-bright);
-            padding: 1rem 1.5rem; border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            display: flex; align-items: center; gap: 0.75rem;
-            opacity: 0; transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 9999; pointer-events: none;
-            font-weight: 600;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .toast.success { border-color: var(--success); }
-        .toast.error { border-color: var(--danger); }
-
-        /* ── Loading / Empty ── */
-        .loading-spinner { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
-        .spinner {
-            width: 50px; height: 50px; margin: 0 auto 1rem;
-            border: 4px solid var(--border-subtle); border-top-color: var(--accent-primary);
-            border-radius: 50%; animation: spin 1s linear infinite;
-        }
-        .empty-state { text-align: center; padding: 6rem 2rem; color: var(--text-dim); }
-        .empty-state h3 { margin-top: 1.5rem; font-size: 1.75rem; color: var(--text-muted); font-weight: 700; }
-        .empty-state p { margin-top: 0.5rem; font-size: 1.1rem; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 1100px) {
-            #scriptsContainer { columns: 2; }
-        }
-        @media (max-width: 768px) {
-            .navbar { padding: 0.6rem 1rem; gap: 0.4rem; }
-            .tabs { gap: 0.3rem; }
-            .tab { padding: 0.35rem 0.6rem; font-size: 0.72rem; white-space: nowrap; flex-shrink: 0; }
-            .social-bar { padding: 0.4rem 1rem; gap: 0.35rem; }
-            .discord-icon-btn, .youtube-icon-btn, .tiktok-icon-btn, .keysystem-icon-btn { width: 34px; height: 34px; padding: 0.4rem; }
-            .discord-icon, .youtube-icon, .tiktok-icon, .keysystem-icon { width: 16px; height: 16px; }
-            #mainTab { padding: 3rem 1rem; }
-            #mainTab h1 { font-size: 2.5rem; }
-            #scriptsContainer { columns: 1; }
-            .content { padding: 2rem 1rem; }
-            .theme-toggle { bottom: 1rem; right: 1rem; width: 48px; height: 48px; }
-            .theme-toggle svg { width: 20px; height: 20px; }
-            .header-left { flex-direction: column; gap: 1rem; align-items: flex-start; width: 100%; }
-            .search-input { width: 100%; }
-            .search-input:focus { width: 100%; }
-            .script-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .script-header h2 { font-size: 2rem; }
-            .refresh-btn { width: 100%; justify-content: center; }
-            .toast { right: 1rem; left: 1rem; bottom: 6rem; }
-            .modal-body { padding: 1.25rem 1.25rem 1.5rem; }
-            .modal-title { font-size: 1.35rem; }
-            .modal-thumb { height: 160px; }
-        }
-        /* ── Sort Dropdown ── */
-        .sort-wrap { position: relative; }
-
-        .sort-btn {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: 0.75rem 1rem;
-            color: var(--text-primary); cursor: pointer;
-            display: flex; align-items: center; gap: 0.5rem;
-            font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
-            transition: all 0.2s ease; white-space: nowrap;
-            user-select: none;
-        }
-        .sort-btn:hover { border-color: var(--accent-primary); box-shadow: 0 4px 12px var(--accent-glow); }
-        .sort-btn.open { border-color: var(--accent-primary); box-shadow: 0 4px 12px var(--accent-glow); }
-
-        .sort-chevron { transition: transform 0.25s ease; flex-shrink: 0; }
-        .sort-btn.open .sort-chevron { transform: rotate(180deg); }
-
-        .sort-menu {
-            position: absolute; top: calc(100% + 0.5rem); left: 0;
-            min-width: 180px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-bright);
-            border-radius: 12px;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.5);
-            overflow: hidden;
-            z-index: 500;
-            opacity: 0; pointer-events: none;
-            transform: translateY(-8px) scale(0.97);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        .sort-menu.open {
-            opacity: 1; pointer-events: all;
-            transform: translateY(0) scale(1);
-        }
-
-        .sort-option {
-            padding: 0.7rem 1.1rem;
-            font-size: 0.9rem; font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-        }
-        .sort-option:hover { background: var(--bg-elevated); color: var(--text-primary); }
-        .sort-option.active { color: var(--accent-bright); background: rgba(124,58,237,0.08); }
-        .sort-option.active::after {
-            content: '✓';
-            font-size: 0.8rem;
-            color: var(--accent-bright);
-        }
-
-        @media (max-width: 768px) {
-            .sort-menu { right: 0; left: auto; }
-        }
-        /* ── Executors Tab ── */
-        .exec-filter-bar {
-            display: flex; gap: 0.5rem; flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-        .exec-filter-btn {
-            padding: 0.5rem 1.1rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-elevated);
-            color: var(--text-muted);
-            font-family: 'Syne', sans-serif;
-            font-size: 0.85rem; font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .exec-filter-btn:hover { border-color: var(--accent-primary); color: var(--text-primary); }
-        .exec-filter-btn.active {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            border-color: transparent; color: white;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        #executorsContainer {
-            columns: 3; column-gap: 1.5rem;
-        }
-
-        .exec-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            break-inside: avoid;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            width: 100%;
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
-            position: relative;
-        }
-        .exec-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            opacity: 0; transition: opacity 0.4s;
-        }
-        .exec-card:hover::before { opacity: 1; }
-        .exec-card:hover {
-            border-color: var(--border-bright);
-            transform: translateY(-4px);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-        }
-        .exec-card.discontinued { opacity: 0.6; }
-        .exec-card.pending { opacity: 0.75; }
-
-        .exec-thumb-wrap {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.25rem 1.25rem 0;
-        }
-        .exec-thumbnail {
-            max-width: 100%;
-            height: auto;
-            max-height: 120px;
-            object-fit: contain;
-            display: block;
-            border-radius: 8px;
-        }
-
-        .exec-body { padding: 1.25rem 1.4rem 1.4rem; }
-
-        .exec-status-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 0.6rem;
-        }
-        .exec-status {
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
-            text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px;
-        }
-        .exec-status.active { background: rgba(16,185,129,0.15); color: #10b981; }
-        .exec-status.discontinued { background: rgba(239,68,68,0.15); color: #ef4444; }
-        .exec-status.pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
-
-        .exec-downloads {
-            font-size: 0.78rem; color: var(--text-dim); font-weight: 600;
-            display: flex; align-items: center; gap: 0.3rem;
-        }
-
-        .exec-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .exec-desc {
-            font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;
-            margin-bottom: 1.1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .exec-platform-btns {
-            display: flex; flex-direction: column; gap: 0.5rem;
-        }
-        .exec-platform-btn {
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            padding: 0.65rem 1rem;
-            border-radius: 10px;
-            font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700;
-            text-decoration: none; cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .exec-platform-windows {
-            background: #0078d4;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,120,212,0.3);
-        }
-        .exec-platform-windows:hover { background: #106ebe; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,120,212,0.45); }
-        .exec-platform-android {
-            background: #3ddc84;
-            color: #1a1a1a;
-            box-shadow: 0 4px 12px rgba(61,220,132,0.3);
-        }
-        .exec-platform-android:hover { background: #2fc870; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(61,220,132,0.45); }
-        .exec-platform-ios {
-            background: #555;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .exec-platform-ios:hover { background: #444; transform: translateY(-2px); }
-        .exec-platform-mac {
-            background: #555;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .exec-platform-mac:hover { background: #444; transform: translateY(-2px); }
-        .exec-download-btn.disabled {
-            display: flex; align-items: center; justify-content: center;
-            padding: 0.65rem 1rem; border-radius: 10px;
-            background: var(--bg-elevated); color: var(--text-dim);
-            border: 1px solid var(--border-subtle);
-            font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700;
-        }
-
-        @media (max-width: 1100px) { #executorsContainer { columns: 2; } }
-        @media (max-width: 768px)  { #executorsContainer { columns: 1; } }
-        /* ── Key Tutorial Tab ── */
-        .keytut-layout {
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
-            max-width: 720px;
-            margin: 0 auto;
-        }
-
-        .keytut-video-wrap { display: flex; flex-direction: column; gap: 0.75rem; }
-        .keytut-video-label, .keytut-steps-label {
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--text-dim);
-            margin-bottom: 0.25rem;
-        }
-
-        .keytut-video-container {
-            position: relative; width: 100%; padding-top: 177.77%; /* 9:16 shorts ratio */
-            border-radius: 16px; overflow: hidden;
-            border: 1px solid var(--border-bright);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-            max-height: 560px;
-        }
-        /* Cap height on larger screens so it doesn't go full-page */
-        @media (min-width: 480px) {
-            .keytut-video-container {
-                padding-top: 0;
-                height: 560px;
-            }
-        }
-
-        .keytut-video-container iframe {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            border: none;
-        }
-
-        .keytut-video-note {
-            font-size: 0.85rem; color: var(--text-dim);
-            text-align: center; font-weight: 600;
-            margin-top: 0.25rem;
-        }
-
-        .keytut-steps { display: flex; flex-direction: column; gap: 1rem; }
-
-        .keytut-step {
-            display: flex; gap: 1.25rem; align-items: flex-start;
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            padding: 1.25rem 1.4rem;
-            transition: border-color 0.2s ease;
-            animation: fadeInUp 0.5s cubic-bezier(0.4,0,0.2,1) backwards;
-        }
-        .keytut-step:hover { border-color: var(--border-bright); }
-        .keytut-step:nth-child(1) { animation-delay: 0.05s; }
-        .keytut-step:nth-child(2) { animation-delay: 0.1s; }
-        .keytut-step:nth-child(3) { animation-delay: 0.15s; }
-        .keytut-step:nth-child(4) { animation-delay: 0.2s; }
-
-        .step-num {
-            min-width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
-            color: white; font-weight: 800; font-size: 0.95rem;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px var(--accent-glow);
-            flex-shrink: 0;
-        }
-
-        .step-content { display: flex; flex-direction: column; gap: 0.3rem; }
-        .step-title { font-size: 1rem; font-weight: 700; }
-        .step-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
-        .step-desc a { color: var(--accent-bright); text-decoration: none; }
-        .step-desc a:hover { text-decoration: underline; }
-        .step-desc code {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.85rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-bright);
-            color: var(--accent-bright);
-            padding: 0.1rem 0.45rem;
-            border-radius: 5px;
-        }
-
-        .keytut-tip {
-            display: flex; gap: 0.75rem; align-items: flex-start;
-            background: rgba(124,58,237,0.08);
-            border: 1px solid rgba(124,58,237,0.25);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
-            margin-top: 0.5rem;
-        }
-        .keytut-tip span:first-child { font-size: 1.1rem; flex-shrink: 0; }
-        /* ── Favorites ── */
-        .fav-count-badge {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: #f59e0b; color: white;
-            font-size: 0.65rem; font-weight: 800;
-            width: 18px; height: 18px; border-radius: 50%;
-            margin-left: 0.2rem;
-        }
-
-        .fav-filter-btn {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: 0.75rem 1rem;
-            color: var(--text-muted); cursor: pointer;
-            display: flex; align-items: center; gap: 0.5rem;
-            font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
-            transition: all 0.2s ease; white-space: nowrap;
-        }
-        .fav-filter-btn svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; transition: all 0.2s ease; }
-        .fav-filter-btn:hover { border-color: #f59e0b; color: #f59e0b; }
-        .fav-filter-btn:hover svg { stroke: #f59e0b; }
-        .fav-filter-btn.active {
-            border-color: #f59e0b;
-            background: rgba(245,158,11,0.1);
-            color: #f59e0b;
-            box-shadow: 0 4px 12px rgba(245,158,11,0.2);
-        }
-        .fav-filter-btn.active svg { stroke: #f59e0b; fill: #f59e0b; }
-
-        /* Star button on card */
-        .fav-star-btn {
-            background: none; border: none; cursor: pointer;
-            padding: 0.3rem; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease; flex-shrink: 0;
-        }
-        .fav-star-btn svg { width: 18px; height: 18px; stroke: var(--text-dim); fill: none; transition: all 0.2s ease; }
-        .fav-star-btn:hover svg { stroke: #f59e0b; }
-        .fav-star-btn.active svg { stroke: #f59e0b; fill: #f59e0b; }
-
-        /* Star button in modal */
-        .btn-fav-modal {
-            background: var(--bg-elevated); border: 1px solid var(--border-bright);
-            color: var(--text-muted); border-radius: 12px;
-            padding: 0.9rem 1rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease; flex-shrink: 0;
-        }
-        .btn-fav-modal svg { width: 20px; height: 20px; stroke: var(--text-muted); fill: none; transition: all 0.2s ease; }
-        .btn-fav-modal:hover svg { stroke: #f59e0b; }
-        .btn-fav-modal.active { border-color: #f59e0b; background: rgba(245,158,11,0.1); }
-        .btn-fav-modal.active svg { stroke: #f59e0b; fill: #f59e0b; }
-        /* ── Obfuscator ── */
-        #obfuscatorTab { padding: 0; }
-        .obf-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; padding: 0 0.5rem; }
-        .obf-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-        .obf-header h2 { margin: 0 0 0.25rem; font-size: 1.6rem; }
-        .obf-subtitle { color: var(--text-dim); font-size: 0.9rem; margin: 0; }
-        .obf-level-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
-        .obf-level-label { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
-        .obf-level-btns { display: flex; gap: 0.4rem; }
-        .obf-level-btn {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            color: var(--text-muted); border-radius: 8px; padding: 0.4rem 0.8rem;
-            font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .obf-level-btn:hover { border-color: var(--accent-primary); color: var(--accent-bright); }
-        .obf-level-btn.active { background: var(--accent-primary); border-color: var(--accent-primary); color: white; }
-
-        .obf-editors { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: stretch; }
-        @media (max-width: 768px) { .obf-editors { grid-template-columns: 1fr; } .obf-arrow { transform: rotate(90deg); margin: 0 auto; } }
-        .obf-panel { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-subtle); border-radius: 16px; overflow: hidden; background: var(--bg-elevated); }
-        .obf-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-subtle); background: var(--bg-raised); }
-        .obf-panel-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
-        .obf-panel-btn {
-            background: none; border: 1px solid var(--border-subtle); color: var(--text-muted);
-            border-radius: 6px; padding: 0.25rem 0.65rem; font-size: 0.8rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; font-family: 'Syne', sans-serif;
-        }
-        .obf-panel-btn:hover:not(:disabled) { border-color: var(--accent-bright); color: var(--accent-bright); }
-        .obf-panel-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-        .obf-textarea {
-            flex: 1; min-height: 320px; resize: vertical;
-            background: transparent; border: none; outline: none;
-            color: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem;
-            line-height: 1.6; padding: 1rem; tab-size: 4;
-        }
-        .obf-textarea::placeholder { color: var(--text-dim); }
-        .obf-textarea[readonly] { color: var(--accent-bright); }
-
-        .obf-arrow { display: flex; align-items: center; justify-content: center; width: 40px; flex-shrink: 0; }
-        .obf-arrow svg { width: 28px; height: 28px; stroke: var(--accent-primary); }
-
-        .obf-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-        .obf-stats { font-size: 0.85rem; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; }
-        .obf-stats span { color: var(--accent-bright); font-weight: 700; }
-        .obf-run-btn {
-            background: linear-gradient(135deg, var(--accent-primary), #6d28d9);
-            border: none; color: white; border-radius: 12px;
-            padding: 0.85rem 2rem; font-family: 'Syne', sans-serif; font-weight: 800;
-            font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
-            transition: all 0.2s; box-shadow: 0 4px 20px rgba(124,58,237,0.4);
-        }
-        .obf-run-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,0.5); }
-        .obf-run-btn:active { transform: translateY(0); }
-        .obf-run-btn.running { opacity: 0.7; cursor: not-allowed; }
-        .obf-clear-btn {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            color: var(--text-muted); border-radius: 12px; padding: 0.85rem 1.25rem;
-            font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .obf-clear-btn:hover { border-color: var(--danger); color: var(--danger); }
-
-        .obf-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-        @media (max-width: 900px) { .obf-layers { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 500px) { .obf-layers { grid-template-columns: 1fr; } }
-        .obf-layer-card {
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem;
-        }
-        .obf-layer-icon { font-size: 1.4rem; }
-        .obf-layer-title { font-weight: 800; font-size: 0.9rem; color: var(--text-primary); }
-        .obf-layer-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
-        .obf-layer-desc code { color: var(--accent-bright); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
-    </style>
+    /* Mobile specific adjustment */
+    @media (max-width: 768px) {
+      .logo { width: 90px; }
+      .side-menu { max-width: 100%; }
+    }
+  </style>
 </head>
-
 <body>
 
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="sun-icon" viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none">
-            <circle cx="12" cy="12" r="5" fill="white" stroke="none"/>
-            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-    </button>
+  <div class="particles" id="particles"></div>
 
-    <nav class="navbar">
-        <div class="tabs">
-            <div class="tab active" data-tab="main">Main</div>
-            <div class="tab" data-tab="scripts">Scripts</div>
-            <div class="tab" data-tab="executors">Executors</div>
-            <div class="tab" data-tab="keytut">🔑 Key Guide</div>
-            <div class="tab" data-tab="obfuscator">🔒 Obfuscator <span style="font-size:0.6rem;background:var(--accent-primary);color:white;padding:0.1rem 0.35rem;border-radius:4px;font-weight:800;vertical-align:middle;">BETA</span></div>
-        </div>
-    </nav>
-    <div class="social-bar">
-        <button class="discord-icon-btn" onclick="window.open('https://discord.gg/TdaWNwNAMa','_blank')" aria-label="Discord">
-            <svg class="discord-icon" viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
-        </button>
-        <button class="youtube-icon-btn" onclick="window.open('https://www.youtube.com/@KittyScriptsRBLX','_blank')" aria-label="YouTube">
-            <svg class="youtube-icon" viewBox="0 0 461.001 461.001"><path d="M365.257,67.393H95.744C42.866,67.393,0,110.259,0,163.137v134.728c0,52.878,42.866,95.744,95.744,95.744h269.513c52.878,0,95.744-42.866,95.744-95.744V163.137C461.001,110.259,418.135,67.393,365.257,67.393z M300.506,237.056l-126.06,60.123c-3.359,1.602-7.239-0.847-7.239-4.568V168.607c0-3.774,3.982-6.22,7.348-4.512l126.06,63.881C304.563,229.873,304.464,235.423,300.506,237.056z"/></svg>
-        </button>
-        <button class="tiktok-icon-btn" onclick="window.open('https://www.tiktok.com/@kittyscriptsrblx','_blank')" aria-label="TikTok">
-            <svg class="tiktok-icon" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-        </button>
-        <button class="keysystem-icon-btn" onclick="window.open('https://zxkuhl.github.io/KEY-system/','_blank')" aria-label="Key System">
-            <img src="https://raw.githubusercontent.com/jayzioncheeks/KittyScripts-Hub/refs/heads/main/X%20logo.png" alt="Key System" style="width:28px;height:28px;object-fit:contain;">
-        </button>
+  <input type="checkbox" id="menu-check" />
+  <label for="menu-check" class="menu-toggle">
+    <div class="hamburger"></div>
+  </label>
+
+  <div class="side-menu">
+    <div class="menu-item">
+      <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" download>
+        [ DOWNLOAD_STABLE.EXE ]
+      </a>
     </div>
-
-    <main class="content">
-        <section id="mainTab">
-            <h1>KittyScripts</h1>
-            <div class="logo-container">
-                <img src="https://raw.githubusercontent.com/jayzioncheeks/KittyScripts-Hub/refs/heads/main/Untitled30_20260227180647.png" alt="KittyScripts Logo">
-            </div>
-            <p class="tagline">
-                <span>Script</span><span> hub</span><span> •</span><span> simple</span><span> • clean</span>
-            </p>
-        </section>
-
-        <section id="scriptsTab" style="display:none;">
-            <div class="script-header">
-                <div class="header-left">
-                    <h2>Scripts</h2>
-                    <input id="searchInput" class="search-input" placeholder="Search scripts…" type="search">
-                    <div class="sort-wrap">
-                        <div class="sort-dropdown" id="sortDropdown">
-                            <button class="sort-btn" id="sortBtn" aria-haspopup="true" aria-expanded="false">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
-                                <span id="sortLabel">Sort: Default</span>
-                                <svg class="sort-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                            </button>
-                            <div class="sort-menu" id="sortMenu">
-                                <div class="sort-option active" data-sort="default">Default</div>
-                                <div class="sort-option" data-sort="az">A → Z</div>
-                                <div class="sort-option" data-sort="za">Z → A</div>
-                                <div class="sort-option" data-sort="views">Most Viewed</div>
-                                <div class="sort-option" data-sort="verified">Verified First</div>
-                                <div class="sort-option" data-sort="universal">Universal First</div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="refresh-btn" id="refreshBtn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                        Refresh
-                    </button>
-                    <button class="fav-filter-btn" id="favFilterBtn" title="Show favorites only">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        <span id="favFilterLabel">Favorites</span>
-                        <span class="fav-count-badge" id="favCountBadge" style="display:none;"></span>
-                    </button>
-                </div>
-            </div>
-            <div id="scriptsContainer">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Loading scripts from ScriptBlox…</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="executorsTab" style="display:none;">
-            <div class="script-header">
-                    <input id="execSearchInput" class="search-input" placeholder="Search executors…" type="search">
-                </div>
-                <div style="display:flex;align-items:center;gap:0.5rem;">
-                    <span style="font-size:0.8rem;color:var(--text-dim);font-weight:600;">Powered by</span>
-                    <a href="https://wearedevs.net/exploits" target="_blank" rel="noopener" style="color:var(--accent-bright);font-size:0.85rem;font-weight:700;text-decoration:none;">WeAreDevs ↗</a>
-                </div>
-            </div>
-
-            <div class="exec-filter-bar" id="execFilterBar">
-                <button class="exec-filter-btn active" data-filter="all">All</button>
-                <button class="exec-filter-btn" data-filter="active">✅ Active</button>
-                <button class="exec-filter-btn" data-filter="discontinued">🚫 Discontinued</button>
-                <button class="exec-filter-btn" data-filter="pending">⚠️ Pending Fixes</button>
-            </div>
-
-            <div id="executorsContainer">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Loading executors from WeAreDevs…</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="keytutTab" style="display:none;">
-            <div class="script-header">
-                <div class="header-left">
-                    <h2>Key Guide</h2>
-                </div>
-            </div>
-
-            <div class="keytut-layout">
-                <!-- Video -->
-                <div class="keytut-video-wrap">
-                    <div class="keytut-video-label">Watch the tutorial</div>
-                    <div class="keytut-video-container">
-                        <iframe
-                            src="https://www.youtube.com/embed/9WFLMbdrJ9M"
-                            title="How to get a KittyScripts key"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                    <p class="keytut-video-note">Can't watch? Scroll down for written steps ↓</p>
-                </div>
-
-                <!-- Written steps -->
-                <div class="keytut-steps" id="writtenSteps">
-                    <div class="keytut-steps-label">Step-by-step written guide</div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">1</div>
-                        <div class="step-content">
-                            <div class="step-title">Open the key link</div>
-                            <div class="step-desc">Click the 🔑 key icon button in the top navbar, or go to <a href="https://zxkuhl.github.io/KEY-system/" target="_blank" rel="noopener">zxkuhl.github.io/KEY-system</a>.</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">2</div>
-                        <div class="step-content">
-                            <div class="step-title">Choose your method</div>
-                            <div class="step-desc">You'll be given 3 options — <strong>join the Discord</strong>, complete a <strong>Linkvertise</strong> link, or complete a <strong>Shrinkme.io</strong> link. Pick whichever works best for you.</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">3</div>
-                        <div class="step-content">
-                            <div class="step-title">Complete the steps</div>
-                            <div class="step-desc">Follow the on-screen instructions for the method you chose. Just click through and do what it asks.</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">4</div>
-                        <div class="step-content">
-                            <div class="step-title">You'll be brought to another website</div>
-                            <div class="step-desc">After completing the steps you'll be redirected automatically. Don't close the page!</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">5</div>
-                        <div class="step-content">
-                            <div class="step-title">Generate your key and save it</div>
-                            <div class="step-desc">Hit the generate button and copy your key. Save it somewhere safe — you'll need it every time you use a script.</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">6</div>
-                        <div class="step-content">
-                            <div class="step-title">Execute your script and paste the key</div>
-                            <div class="step-desc">Run the script in your executor. When the key prompt pops up, paste your key <strong>exactly</strong> as shown — for example: <code>FREE-1234</code></div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-step">
-                        <div class="step-num">7</div>
-                        <div class="step-content">
-                            <div class="step-title">Enjoy your scripts! 🎉</div>
-                            <div class="step-desc">You're all set. Have fun and don't forget to check back for new scripts!</div>
-                        </div>
-                    </div>
-
-                    <div class="keytut-tip">
-                        <span>💡</span>
-                        <span>Keys expire every <strong>24 hours</strong>. If a script says your key is invalid, just go back to the key system and grab a fresh one.</span>
-                    </div>
-
-                    <div class="keytut-tip" style="border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08);">
-                        <span>⏰</span>
-                        <span>Your key is only valid for <strong>24 hours</strong> from when you generated it. After that it expires and you'll need to get a new one — just repeat the steps above!</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- ── Obfuscator ── -->
-    <section id="obfuscatorTab" style="display:none;">
-        <div class="obf-container">
-            <div class="obf-header">
-                <div>
-                    <h2>Lua Obfuscator <span style="font-size:0.55em;background:var(--accent-primary);color:white;padding:0.2em 0.55em;border-radius:6px;vertical-align:middle;letter-spacing:0.08em;">BETA</span></h2>
-                    <p class="obf-subtitle">--[[ KittyScripts Obfuscator BETA ]] — decimal encoding + loadstring() wrapping</p>
-                </div>
-                <div class="obf-level-wrap">
-                    <label class="obf-level-label">Intensity</label>
-                    <div class="obf-level-btns">
-                        <button class="obf-level-btn" data-level="1">Low</button>
-                        <button class="obf-level-btn active" data-level="2">Medium</button>
-                        <button class="obf-level-btn" data-level="3">Max 💀</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="obf-editors">
-                <div class="obf-panel">
-                    <div class="obf-panel-header">
-                        <span class="obf-panel-label">Input Script</span>
-                        <button class="obf-panel-btn" id="obfPasteBtn">Paste</button>
-                    </div>
-                    <textarea class="obf-textarea" id="obfInput" placeholder="-- Paste your Lua script here...&#10;&#10;local player = game.Players.LocalPlayer&#10;print(&quot;Hello, &quot; .. player.Name)"></textarea>
-                </div>
-                <div class="obf-arrow">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-                <div class="obf-panel">
-                    <div class="obf-panel-header">
-                        <span class="obf-panel-label">Obfuscated Output</span>
-                        <button class="obf-panel-btn" id="obfCopyBtn" disabled>Copy</button>
-                    </div>
-                    <textarea class="obf-textarea" id="obfOutput" placeholder="-- Obfuscated script will appear here..." readonly></textarea>
-                </div>
-            </div>
-
-            <div class="obf-actions">
-                <div class="obf-stats" id="obfStats"></div>
-                <div style="display:flex;gap:0.75rem;">
-                    <button class="obf-clear-btn" id="obfClearBtn">Clear</button>
-                    <button class="obf-run-btn" id="obfRunBtn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        Obfuscate
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- ── Modal ── -->
-    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
-        <div class="modal" id="modal">
-            <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
-            <img class="modal-thumb" id="modalThumb" alt="" style="display:none;">
-            <div class="modal-body">
-                <div class="modal-title-row">
-                    <div class="modal-title" id="modalTitle"></div>
-                </div>
-                <a class="modal-game" id="modalGame" style="display:none;" target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 0L0 24l20.82-6.18L24 0zm13.5 17.02l-9.18 2.72 2.7-9.18 9.18-2.7z"/></svg>
-                    <span id="modalGameName"></span>
-                    <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <div class="modal-badges" id="modalBadges"></div>
-
-                <div class="modal-section-label">Script</div>
-                <div class="modal-code-wrap">
-                    <pre class="modal-code" id="modalCode"></pre>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn-copy-modal" id="modalCopyBtn">
-                        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy Script
-                    </button>
-                    <button class="btn-fav-modal" id="modalFavBtn" aria-label="Favorite">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    </button>
-                    <button class="btn-close-modal" id="modalCloseBtn">Close</button>
-                </div>
-            </div>
-        </div>
+    <div class="changelog">
+      <h3>SYSTEM_LOG</h3>
+      <ul>
+        <li>Beta 0.1: Native Injection enabled</li>
+        <li>Update 0.2: One-time stealth bypass</li>
+        <li>Roadmap: FPS_Unlocker.sys integration</li>
+      </ul>
     </div>
+  </div>
 
-    <div class="toast" id="toast">
-        <span class="toast-icon"></span>
-        <span class="toast-message"></span>
+  <div class="scroll-container">
+    <div class="container">
+      <img src="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/X%20logo.png" alt="Xinject Logo" class="logo">
+      
+      <h1 class="title">XINJECT<span style="color:var(--primary-purple)">_</span></h1>
+      <p class="subtitle">Windows Kernel Executor // v0.1b</p>
+      
+      <a href="https://raw.githubusercontent.com/zxkuhl/Xinject-Windows-/refs/heads/main/Xinject%20installer.exe" class="btn-download">INITIALIZE DOWNLOAD</a>
+      
+      <p style="margin-top: 2rem; font-size: 0.7rem; opacity: 0.5; max-width: 300px;">
+        AUTH_TOKEN: REQUIRED<br>
+        STATUS: UNDETECTED<br>
+        ENVIRONMENT: X64_WIN_BETA
+      </p>
     </div>
+  </div>
 
-    <script>
-        // ── Elements ──
-        const mainTab        = document.getElementById('mainTab');
-        const scriptsTab     = document.getElementById('scriptsTab');
-        const scriptsContainer = document.getElementById('scriptsContainer');
-        const toast          = document.getElementById('toast');
-        const searchInput    = document.getElementById('searchInput');
-        const refreshBtn     = document.getElementById('refreshBtn');
-        const themeToggle    = document.getElementById('themeToggle');
+  <script>
+    // Advanced Particle System - Code Bits
+    const container = document.getElementById('particles');
+    const codeSnippets = ['0', '1', '{ }', '=>', 'NULL', 'VOID', 'INT', '0x1A'];
+    const maxParticles = 40;
+    let currentParticles = 0;
 
-        const modalOverlay   = document.getElementById('modalOverlay');
-        const modalClose     = document.getElementById('modalClose');
-        const modalCloseBtn  = document.getElementById('modalCloseBtn');
-        const modalCopyBtn   = document.getElementById('modalCopyBtn');
-        const modalThumb     = document.getElementById('modalThumb');
-        const modalTitle     = document.getElementById('modalTitle');
-        const modalGame      = document.getElementById('modalGame');
-        const modalGameName  = document.getElementById('modalGameName');
-        const modalBadges    = document.getElementById('modalBadges');
-        const modalCode      = document.getElementById('modalCode');
+    function createBit() {
+      if (currentParticles >= maxParticles) return;
+      
+      const bit = document.createElement('div');
+      bit.className = 'bit';
+      bit.innerText = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+      
+      const left = Math.random() * 100;
+      const duration = 5 + Math.random() * 10;
+      const size = 10 + Math.random() * 10;
+      
+      bit.style.left = left + 'vw';
+      bit.style.animationDuration = duration + 's';
+      bit.style.fontSize = size + 'px';
+      bit.style.opacity = Math.random();
+      
+      container.appendChild(bit);
+      currentParticles++;
 
-        let allScripts = [];
-        let currentScript = null;
-        let currentSort = 'default';
+      setTimeout(() => {
+        bit.remove();
+        currentParticles--;
+      }, duration * 1000);
+    }
 
-        // ── Sort Dropdown ──
-        const sortBtn    = document.getElementById('sortBtn');
-        const sortMenu   = document.getElementById('sortMenu');
-        const sortLabel  = document.getElementById('sortLabel');
+    // Initialize
+    for(let i=0; i<20; i++) {
+        setTimeout(createBit, i * 200);
+    }
+    setInterval(createBit, 400);
 
-        const sortLabels = {
-            default:   'Sort: Default',
-            az:        'Sort: A → Z',
-            za:        'Sort: Z → A',
-            views:     'Sort: Most Viewed',
-            verified:  'Sort: Verified',
-            universal: 'Sort: Universal',
-        };
-
-        sortBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const open = sortMenu.classList.toggle('open');
-            sortBtn.classList.toggle('open', open);
-            sortBtn.setAttribute('aria-expanded', open);
-        });
-
-        document.addEventListener('click', () => {
-            sortMenu.classList.remove('open');
-            sortBtn.classList.remove('open');
-            sortBtn.setAttribute('aria-expanded', false);
-        });
-
-        sortMenu.addEventListener('click', (e) => {
-            const opt = e.target.closest('.sort-option');
-            if (!opt) return;
-            currentSort = opt.dataset.sort;
-            sortLabel.textContent = sortLabels[currentSort];
-            document.querySelectorAll('.sort-option').forEach(o => o.classList.toggle('active', o.dataset.sort === currentSort));
-            sortMenu.classList.remove('open');
-            sortBtn.classList.remove('open');
-            applyFiltersAndSort();
-        });
-
-        function sortScripts(scripts) {
-            const arr = [...scripts];
-            switch (currentSort) {
-                case 'az':        return arr.sort((a,b) => {
-                    const ka = a.isUniversal ? (a.title||'') : (a.game?.name || a.title || '');
-                    const kb = b.isUniversal ? (b.title||'') : (b.game?.name || b.title || '');
-                    return ka.localeCompare(kb);
-                });
-                case 'za':        return arr.sort((a,b) => {
-                    const ka = a.isUniversal ? (a.title||'') : (a.game?.name || a.title || '');
-                    const kb = b.isUniversal ? (b.title||'') : (b.game?.name || b.title || '');
-                    return kb.localeCompare(ka);
-                });
-                case 'views':     return arr.sort((a,b) => (b.views||b.viewCount||0) - (a.views||a.viewCount||0));
-                case 'verified':  return arr.sort((a,b) => (b.verified?1:0) - (a.verified?1:0));
-                case 'universal': return arr.sort((a,b) => (b.isUniversal?1:0) - (a.isUniversal?1:0));
-                default:          return arr;
-            }
+    // Subtle Title Glitch Effect
+    const title = document.querySelector('.title');
+    setInterval(() => {
+        if(Math.random() > 0.95) {
+            title.style.textShadow = '2px 0 #ff00ff, -2px 0 #00ffff';
+            setTimeout(() => {
+                title.style.textShadow = '0 0 10px var(--primary-purple), 0 0 20px var(--primary-purple)';
+            }, 100);
         }
-
-        // ── Theme ──
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        themeToggle.addEventListener('click', () => {
-            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        });
-
-        // ── Utilities ──
-        function escapeHtml(text) {
-            const d = document.createElement('div');
-            d.textContent = text;
-            return d.innerHTML;
-        }
-
-        function showToast(message, type = 'success') {
-            const msg  = toast.querySelector('.toast-message');
-            const icon = toast.querySelector('.toast-icon');
-            msg.textContent  = message;
-            icon.textContent = type === 'success' ? '✓' : '✕';
-            toast.className  = 'toast show ' + type;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        async function copyScript(code) {
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(code);
-                } else {
-                    const ta = document.createElement('textarea');
-                    ta.value = code;
-                    ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
-                    document.body.appendChild(ta);
-                    ta.focus(); ta.select();
-                    document.execCommand('copy');
-                    ta.remove();
-                }
-                showToast('Script copied to clipboard!', 'success');
-
-                // Button feedback
-                const orig = modalCopyBtn.innerHTML;
-                modalCopyBtn.innerHTML = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:white;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-                modalCopyBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                setTimeout(() => {
-                    modalCopyBtn.innerHTML = orig;
-                    modalCopyBtn.style.background = '';
-                }, 2000);
-            } catch {
-                showToast('Failed to copy script', 'error');
-            }
-        }
-
-        // ── Modal ──
-        function openModal(script) {
-            currentScript = script;
-
-            // Thumbnail
-            const imageUrl = (script.game && script.game.imageUrl) || script.scriptImage || script.image || script.imageUrl;
-            if (imageUrl) {
-                modalThumb.src = imageUrl;
-                modalThumb.style.display = 'block';
-                modalThumb.onerror = () => { modalThumb.style.display = 'none'; };
-            } else {
-                modalThumb.style.display = 'none';
-            }
-
-            // Title
-            modalTitle.textContent = script.title || 'Untitled Script';
-
-            // Game
-            if (script.game && script.game.name) {
-                modalGameName.textContent = script.game.name;
-                const gameId = script.game.id || script.game.gameId || script.gameId;
-                if (gameId) {
-                    modalGame.href = `https://www.roblox.com/games/${gameId}`;
-                } else {
-                    modalGame.removeAttribute('href');
-                }
-                modalGame.style.display = 'inline-flex';
-            } else {
-                modalGame.style.display = 'none';
-            }
-
-            // Badges
-            let badges = '';
-            if (script.isUniversal) badges += '<span class="badge universal">Universal</span>';
-            if (script.key)         badges += '<span class="badge key-system">Key System</span>';
-            if (script.verified)    badges += '<span class="badge verified">Verified</span>';
-            modalBadges.innerHTML = badges;
-
-            // Code
-            modalCode.textContent = script.script || 'No script content available.';
-
-            // Open
-            modalOverlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            updateModalFavBtn();
-        }
-
-        function closeModal() {
-            modalOverlay.classList.remove('open');
-            document.body.style.overflow = '';
-            currentScript = null;
-        }
-
-        modalClose.addEventListener('click', closeModal);
-        modalCloseBtn.addEventListener('click', closeModal);
-        modalCopyBtn.addEventListener('click', () => currentScript && copyScript(currentScript.script || ''));
-        modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-        // ── Fetch ──
-        async function fetchScripts() {
-            refreshBtn.classList.add('loading');
-            scriptsContainer.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Loading scripts from ScriptBlox…</p></div>`;
-            try {
-                const res  = await fetch('https://scriptblox.com/api/script/search?q=KSRxQmBvZ');
-                const data = await res.json();
-                if (!data.result?.scripts?.length) {
-                    scriptsContainer.innerHTML = `<div class="empty-state"><h3>No scripts found</h3><p>No scripts available from this search</p></div>`;
-                    allScripts = [];
-                    return;
-                }
-                allScripts = data.result.scripts;
-                renderScripts(sortScripts(allScripts));
-                showToast(`Loaded ${allScripts.length} scripts!`, 'success');
-            } catch (err) {
-                console.error(err);
-                scriptsContainer.innerHTML = `<div class="empty-state"><h3>Error loading scripts</h3><p>Failed to fetch from ScriptBlox. Please try again.</p></div>`;
-                showToast('Failed to load scripts', 'error');
-                allScripts = [];
-            } finally {
-                refreshBtn.classList.remove('loading');
-            }
-        }
-
-        // ── Render ──
-        function renderScripts(scripts) {
-            scriptsContainer.innerHTML = '';
-            if (!scripts.length) {
-                scriptsContainer.innerHTML = `<div class="empty-state"><h3>No scripts match your search</h3><p>Try a different search term</p></div>`;
-                return;
-            }
-
-            scripts.forEach((script, i) => {
-                const card = document.createElement('div');
-                card.className = 'script-card';
-                card.style.animationDelay = `${i * 0.04}s`;
-
-                const imageUrl = (script.game && script.game.imageUrl) || script.scriptImage || script.image || script.imageUrl;
-
-                // Badges
-                let badges = '';
-                if (script.isUniversal) badges += '<span class="badge universal">Universal</span>';
-                if (script.key)         badges += '<span class="badge key-system">Key System</span>';
-                if (script.verified)    badges += '<span class="badge verified">Verified</span>';
-
-                // Snippet (first 3 lines)
-                const snippet = (script.script || 'No content').split('\n').slice(0, 3).join('\n');
-
-                card.innerHTML = `
-                    ${imageUrl ? `<div class="card-thumb-wrap"><img class="script-thumbnail" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(script.title || '')}" onerror="this.closest('.card-thumb-wrap').remove()"></div>` : ''}
-                    <div class="card-body">
-                        <div class="card-top">
-                            <div class="card-title">${escapeHtml(script.title || 'Untitled Script')}</div>
-                            <button class="fav-star-btn ${isFav(script) ? 'active' : ''}" title="${isFav(script) ? 'Remove from favorites' : 'Add to favorites'}">
-                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            </button>
-                        </div>
-                        ${script.game?.name ? `<div class="card-game">🎮 ${escapeHtml(script.game.name)}</div>` : ''}
-                        <div class="card-snippet">${escapeHtml(snippet)}</div>
-                        <div class="card-footer">
-                            <div class="script-badges">${badges}</div>
-                            <button class="view-btn">View Script →</button>
-                        </div>
-                    </div>
-                `;
-
-                // Star button — toggle fav without opening modal
-                const starBtn = card.querySelector('.fav-star-btn');
-                starBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleFav(script);
-                    starBtn.classList.toggle('active', isFav(script));
-                    starBtn.title = isFav(script) ? 'Remove from favorites' : 'Add to favorites';
-                });
-
-                // Click card body (not star) → open modal
-                card.addEventListener('click', () => openModal(script));
-                scriptsContainer.appendChild(card);
-            });
-        }
-
-        // ── Search + Sort ──
-        function applyFiltersAndSort() {
-            const q = searchInput.value.toLowerCase().trim();
-            let results = allScripts;
-            if (showFavsOnly) results = results.filter(s => isFav(s));
-            if (q) results = results.filter(s =>
-                (s.title || '').toLowerCase().includes(q) ||
-                (s.game?.name || '').toLowerCase().includes(q) ||
-                (s.script || '').toLowerCase().includes(q));
-            if (showFavsOnly && !results.length) {
-                scriptsContainer.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">⭐</div><h3>No favorites yet</h3><p>Star scripts to save them here</p></div>`;
-                return;
-            }
-            renderScripts(sortScripts(results));
-        }
-
-        // ── Favorites ──
-        const favCountBadge  = document.getElementById('favCountBadge');
-        const favFilterBtn   = document.getElementById('favFilterBtn');
-        const modalFavBtn    = document.getElementById('modalFavBtn');
-        let showFavsOnly     = false;
-
-        function getFavs() {
-            try { return JSON.parse(localStorage.getItem('ks_favs') || '[]'); } catch { return []; }
-        }
-        function saveFavs(favs) {
-            localStorage.setItem('ks_favs', JSON.stringify(favs));
-            updateFavBadge();
-        }
-        function isFav(script) {
-            return getFavs().some(f => f._id === script._id || f.title === script.title);
-        }
-        function toggleFav(script) {
-            let favs = getFavs();
-            if (isFav(script)) {
-                favs = favs.filter(f => f._id !== script._id && f.title !== script.title);
-                showToast('Removed from favorites', 'success');
-            } else {
-                favs.push(script);
-                showToast('⭐ Added to favorites!', 'success');
-            }
-            saveFavs(favs);
-            if (currentScript && (currentScript._id === script._id || currentScript.title === script.title)) {
-                updateModalFavBtn();
-            }
-            // If viewing favs only, re-apply so removed ones disappear
-            if (showFavsOnly) applyFiltersAndSort();
-        }
-        function updateFavBadge() {
-            const count = getFavs().length;
-            if (count > 0) {
-                favCountBadge.textContent = count;
-                favCountBadge.style.display = 'inline-flex';
-            } else {
-                favCountBadge.style.display = 'none';
-            }
-        }
-        function updateModalFavBtn() {
-            if (!currentScript) return;
-            const faved = isFav(currentScript);
-            modalFavBtn.classList.toggle('active', faved);
-            modalFavBtn.title = faved ? 'Remove from favorites' : 'Add to favorites';
-        }
-
-        favFilterBtn.addEventListener('click', () => {
-            showFavsOnly = !showFavsOnly;
-            favFilterBtn.classList.toggle('active', showFavsOnly);
-            applyFiltersAndSort();
-        });
-
-        modalFavBtn.addEventListener('click', () => {
-            if (currentScript) toggleFav(currentScript);
-        });
-
-        updateFavBadge();
-
-        // ── Tab switching ──
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const name = tab.dataset.tab;
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                mainTab.style.display        = name === 'main'        ? 'block' : 'none';
-                scriptsTab.style.display     = name === 'scripts'     ? 'block' : 'none';
-                document.getElementById('executorsTab').style.display   = name === 'executors'   ? 'block' : 'none';
-                document.getElementById('keytutTab').style.display      = name === 'keytut'      ? 'block' : 'none';
-                document.getElementById('obfuscatorTab').style.display  = name === 'obfuscator'  ? 'block' : 'none';
-                if (name === 'scripts'   && !allScripts.length) fetchScripts();
-                if (name === 'executors') renderExecutors();
-            });
-        });
-
-        // ── Obfuscator Engine ──
-        (function() {
-            const input    = document.getElementById('obfInput');
-            const output   = document.getElementById('obfOutput');
-            const runBtn   = document.getElementById('obfRunBtn');
-            const clearBtn = document.getElementById('obfClearBtn');
-            const copyBtn  = document.getElementById('obfCopyBtn');
-            const pasteBtn = document.getElementById('obfPasteBtn');
-            const statsEl  = document.getElementById('obfStats');
-            let obfLevel   = 2;
-
-            document.querySelectorAll('.obf-level-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.obf-level-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    obfLevel = parseInt(btn.dataset.level);
-                });
-            });
-
-
-            // ── Helpers ──
-            function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-            function randHex(len) { let s=''; for(let i=0;i<len;i++) s+='0123456789abcdef'[rand(0,15)]; return s; }
-            function randIdent() {
-                const prefixes = ['_0','_x','_L','_R','__'];
-                return prefixes[rand(0,prefixes.length-1)] + randHex(rand(8,14));
-            }
-
-            // ── String extractor: pull all string literals out before processing ──
-            // Replaces them with safe placeholders so nothing touches them
-            function extractStrings(src) {
-                const strings = [];
-                // Handle: "...", '...', [[...]], [=[...]=] style
-                let result = '';
-                let i = 0;
-                while (i < src.length) {
-                    // Single-line comment -- skip to end of line
-                    if (src[i] === '-' && src[i+1] === '-') {
-                        let end = src.indexOf('\n', i);
-                        if (end === -1) end = src.length;
-                        result += src.slice(i, end);
-                        i = end;
-                        continue;
-                    }
-                    // Double-quoted string
-                    if (src[i] === '"') {
-                        let j = i + 1;
-                        while (j < src.length && src[j] !== '"') {
-                            if (src[j] === '\\') j++;
-                            j++;
-                        }
-                        const str = src.slice(i+1, j);
-                        const ph = `\x00STR${strings.length}\x00`;
-                        strings.push({ val: str, quote: '"' });
-                        result += ph;
-                        i = j + 1;
-                        continue;
-                    }
-                    // Single-quoted string
-                    if (src[i] === "'") {
-                        let j = i + 1;
-                        while (j < src.length && src[j] !== "'") {
-                            if (src[j] === '\\') j++;
-                            j++;
-                        }
-                        const str = src.slice(i+1, j);
-                        const ph = `\x00STR${strings.length}\x00`;
-                        strings.push({ val: str, quote: "'" });
-                        result += ph;
-                        i = j + 1;
-                        continue;
-                    }
-                    // Multiline string [[ ... ]] — keep as-is, don't encode
-                    if (src[i] === '[' && src[i+1] === '[') {
-                        let end = src.indexOf(']]', i+2);
-                        if (end === -1) end = src.length - 2;
-                        const str = src.slice(i, end+2);
-                        const ph = `\x00RAW${strings.length}\x00`;
-                        strings.push({ val: str, raw: true });
-                        result += ph;
-                        i = end + 2;
-                        continue;
-                    }
-                    result += src[i];
-                    i++;
-                }
-                return { src: result, strings };
-            }
-
-            // Restore strings back, optionally encoding them
-            function restoreStrings(src, strings, encode, level) {
-                return src.replace(/\x00(STR|RAW)(\d+)\x00/g, (_, type, idx) => {
-                    const s = strings[parseInt(idx)];
-                    if (type === 'RAW' || s.raw) return s.val; // multiline: always restore raw
-                    if (!encode || s.val.length === 0) return s.quote + s.val + s.quote;
-                    // Skip encoding URLs and Enum paths — they break at runtime
-                    if (s.val.startsWith('http') || s.val.includes('Enum.') || s.val.includes('rbxasset')) {
-                        return s.quote + s.val + s.quote;
-                    }
-                    // Low level: skip long strings
-                    if (level === 1 && s.val.length > 30) return s.quote + s.val + s.quote;
-                    return encodeString(s.val);
-                });
-            }
-
-            // XOR-encode a string into a Lua expression
-            function encodeString(s) {
-                if (!s.length) return '""';
-                const key = rand(1, 90);
-                const bytes = [];
-                for (let i = 0; i < s.length; i++) bytes.push(s.charCodeAt(i) ^ key);
-                const k = randIdent(), t = randIdent(), ii = randIdent(), v = randIdent();
-                return `(function(${k},...) local ${t}={} for ${ii},${v} in ipairs({...}) do ${t}[${ii}]=string.char(bit32.bxor(${v},${k})) end return table.concat(${t}) end)(${key},${bytes.join(',')})`;
-            }
-
-            // Junk lines safe to inject at statement level
-            function junkLine() {
-                const id1 = randIdent(), id2 = randIdent();
-                const j = [
-                    () => `local ${id1} = ${rand(1,9999)} * ${rand(1,99)}`,
-                    () => `local ${id1} = math.floor(${rand(100,9999)} / ${rand(1,50)})`,
-                    () => `if false then local ${id1} = ${rand(0,9)} end`,
-                    () => `do local ${id1} = tostring(${rand(0,999)}) end`,
-                    () => `pcall(function() local ${id1} = ${rand(0,99)} end)`,
-                    () => `local ${id1} = type(${rand(0,1) ? 'nil' : 'true'})`,
-                    () => `do end`,
-                    () => `local ${id1}, ${id2} = ${rand(0,9)}, ${rand(0,9)}`,
-                ];
-                return j[rand(0, j.length-1)]();
-            }
-
-            // ── Variable renaming — only rename variables declared with `local` ──
-            function renameLocals(src) {
-                const keywords = new Set([
-                    'and','break','do','else','elseif','end','false','for','function',
-                    'goto','if','in','local','nil','not','or','repeat','return',
-                    'then','true','until','while',
-                    // Roblox globals — never rename these
-                    'game','workspace','script','LocalPlayer','Players','RunService',
-                    'UserInputService','TweenService','ReplicatedStorage','ServerStorage',
-                    'Lighting','SoundService','StarterGui','StarterPlayer','Teams',
-                    'Humanoid','Character','Instance','Vector3','CFrame','Color3',
-                    'UDim','UDim2','Enum','math','table','string','pairs','ipairs',
-                    'pcall','xpcall','error','warn','print','type','tostring','tonumber',
-                    'select','unpack','next','rawget','rawset','setmetatable','getmetatable',
-                    'require','loadstring','load','wait','task','tick','time','os',
-                    'coroutine','io','debug','bit32','utf8','_G','_ENV',
-                ]);
-
-                const varMap = {};
-                // Only match `local NAME` or `local NAME,` or `for NAME` patterns
-                const pattern = /\blocal\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\s*[,=\n])/g;
-                let m;
-                while ((m = pattern.exec(src)) !== null) {
-                    const name = m[1];
-                    if (!keywords.has(name) && !varMap[name] && !name.startsWith('\x00')) {
-                        varMap[name] = randIdent();
-                    }
-                }
-                // Apply replacements as whole-word only
-                for (const [orig, repl] of Object.entries(varMap)) {
-                    src = src.replace(new RegExp(`\\b${orig}\\b`, 'g'), repl);
-                }
-                return src;
-            }
-
-            // Inject junk between lines, skipping function-body-opening lines
-            function injectJunk(src, level) {
-                const lines = src.split('\n');
-                const result = [];
-                const freq = level === 1 ? 6 : level === 2 ? 3 : 1;
-                let cd = rand(1, freq);
-                for (let i = 0; i < lines.length; i++) {
-                    result.push(lines[i]);
-                    const trimmed = lines[i].trim();
-                    // Don't inject after lines that open a block or are continuations
-                    const skip = /^(function|if|else|elseif|for|while|repeat|do|then)\b|[\(\,\{]$/.test(trimmed) || trimmed === '';
-                    if (!skip) {
-                        cd--;
-                        if (cd <= 0) {
-                            const count = level === 3 ? rand(2,3) : 1;
-                            for (let j = 0; j < count; j++) result.push(junkLine());
-                            cd = rand(1, freq);
-                        }
-                    }
-                }
-                return result.join('\n');
-            }
-
-            // Encode entire script as decimal escape sequences — works in all Lua/Luau versions
-            // This is the same technique WeAreDevs uses
-            // Escape a string safely for use inside a Lua double-quoted string
-            function luaEscape(str) {
-                return str
-                    .replace(/\\/g, '\\\\')
-                    .replace(/"/g, '\\"')
-                    .replace(/\n/g, '\\n')
-                    .replace(/\r/g, '\\r')
-                    .replace(/\0/g, '\\0');
-            }
-
-            // Wrap in loadstring() — output stays roughly same size as input
-            function wrapLoad(src, level) {
-                let current = src;
-                for (let i = 0; i < level; i++) {
-                    const fv = randIdent();
-                    const sv = randIdent();
-                    // Use [[...]] multiline string to avoid escaping issues
-                    // But first check if [[ ]] appears in source — if so use escaped string
-                    const hasMultiline = current.includes('[[') || current.includes(']]');
-                    let strLiteral;
-                    if (hasMultiline) {
-                        strLiteral = `"${luaEscape(current)}"`;
-                    } else {
-                        strLiteral = `[[${current}]]`;
-                    }
-                    current = [
-                        `--[[ KittyScripts Obfuscator BETA ]]`,
-                        `local ${sv}=${strLiteral}`,
-                        `local ${fv}=loadstring(${sv})`,
-                        `if ${fv} then ${fv}() end`,
-                    ].join('\n');
-                }
-                return current;
-            }
-
-            // ── Main pipeline ──
-            function obfuscate(src, level) {
-                // Low = 1 layer, Medium = 2 layers, Max = 3 layers
-                // All levels just use loadstring wrapping — it's the safest and works every time
-                return wrapLoad(src, level);
-            }
-
-            // ── UI ──
-            runBtn.addEventListener('click', () => {
-                const src = input.value.trim();
-                if (!src) { showToast('Paste a script first!', 'error'); return; }
-                runBtn.classList.add('running');
-                runBtn.textContent = 'Obfuscating...';
-
-                setTimeout(() => {
-                    try {
-                        const result = obfuscate(src, obfLevel);
-                        output.value = result;
-                        copyBtn.disabled = false;
-                        const ratio = ((result.length / src.length) * 100).toFixed(0);
-                        statsEl.innerHTML = `Input: <span>${src.length.toLocaleString()}</span> chars → Output: <span>${result.length.toLocaleString()}</span> chars (<span>${ratio}%</span> size)`;
-                        showToast('🔒 Script obfuscated!', 'success');
-                    } catch(e) {
-                        showToast('Error: ' + e.message, 'error');
-                    }
-                    runBtn.classList.remove('running');
-                    runBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> Obfuscate';
-                }, 80);
-            });
-
-            clearBtn.addEventListener('click', () => {
-                input.value = '';
-                output.value = '';
-                copyBtn.disabled = true;
-                statsEl.innerHTML = '';
-            });
-
-            copyBtn.addEventListener('click', () => {
-                const text = output.value;
-                // Try modern clipboard API first, fall back to execCommand for large scripts
-                const doFallback = () => {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
-                    document.body.appendChild(ta);
-                    ta.focus();
-                    ta.select();
-                    try {
-                        document.execCommand('copy');
-                        copyBtn.textContent = 'Copied!';
-                    } catch(e) {
-                        copyBtn.textContent = 'Failed';
-                    }
-                    document.body.removeChild(ta);
-                    setTimeout(() => copyBtn.textContent = 'Copy', 2000);
-                };
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => copyBtn.textContent = 'Copy', 2000);
-                    }).catch(() => doFallback());
-                } else {
-                    doFallback();
-                }
-            });
-
-            pasteBtn.addEventListener('click', async () => {
-                try {
-                    const text = await navigator.clipboard.readText();
-                    input.value = text;
-                } catch(e) {
-                    showToast('Clipboard access denied — paste manually', 'error');
-                }
-            });
-        })();
-
-        searchInput.addEventListener('input', applyFiltersAndSort);
-        refreshBtn.addEventListener('click', fetchScripts);
-
-        // ── Executors ──
-        const execSearchInput   = document.getElementById('execSearchInput');
-        const executorsContainer = document.getElementById('executorsContainer');
-        const execFilterBtns    = document.querySelectorAll('.exec-filter-btn');
-
-        // Data sourced from WeAreDevs — fetch on tab open so it's always current
-        // WeAreDevs doesn't expose a public API, so we hardcode from the live page
-        // and mark the data so users know it reflects the current listing.
-        const EXECUTORS = [
-            { name: 'JJSploit',       downloads: '66.7m+', desc: 'Undetected Lua executor with click teleport, ESP, speed, fly, infinite jump, aimbot, and more. A powerful all-in-one package.', img: 'https://wearedevs.net/images/thumbnails/JJSploit.webp',                                 wadUrl: 'https://wearedevs.net/d/JJSploit',       status: 'active',       platforms: ['windows','android'], urls: { windows: 'https://wearedevs.net/d/JJSploit', android: 'https://wearedevs.net/d/JJSploit-Android' } },
-            { name: 'Solara',         downloads: '11.3m+', desc: 'Free and keyless executor — the first & best external executor after Hyperion.',                                                img: 'https://obj.wearedevs.net/images/software/solara/solara-011026.webp',                wadUrl: 'https://wearedevs.net/d/Solara',         status: 'active',       platforms: ['windows'],              urls: { windows: 'https://getsolara.dev/download/' } },
-            { name: 'Ronix',          downloads: '1.5m+',  desc: '100% UNC, free powerful script executor for Windows, Android, iOS, macOS & Linux. Fast, stable, advanced bypass.',            img: 'https://obj.wearedevs.net/images/software/ronix/ronix-020426.webp',                 wadUrl: 'https://wearedevs.net/d/Ronix',          status: 'active',       platforms: ['windows','android','ios','mac'], urls: { windows: 'https://ronix-executor.com/ronix-windows-download/', android: 'https://ronix-executor.com/ronix-android/', ios: 'https://wearedevs.net/d/Ronix', mac: 'https://wearedevs.net/d/Ronix' } },
-            { name: 'Delta',          downloads: '1.6m+',  desc: 'ALL SCRIPTS WORK! Free and easy to use with 1 AD ONLY! Everyone\'s favourite choice on Mobile!',                             img: 'https://wearedevs.net/images/thumbnails/delta-120425.webp',                          wadUrl: 'https://wearedevs.net/d/Delta',          status: 'active',       platforms: ['android','ios'],         urls: { android: 'https://deltaexploits.gg/delta-executor-android', ios: 'https://deltaexploits.gg/delta-executor-ios' } },
-            { name: 'Xeno',           downloads: '443.9k+',desc: 'An original Lua executor that brought back the scene in full bloom.',                                                         img: 'https://wearedevs.net/images/thumbnails/xeno-112025.webp',                           wadUrl: 'https://wearedevs.net/d/Xeno',           status: 'active',       platforms: ['windows'],              urls: { windows: 'https://getxeno.net/' } },
-            { name: 'Fluxus Z',       downloads: '348.9k+',desc: '90% UNC, fast executor, easy to use, 1-step 40-hour key system. Free to use, clean UI.',                                     img: 'https://wearedevs.net/images/thumbnails/fluxus-z-111125.webp',                       wadUrl: 'https://wearedevs.net/d/Fluxus Z',       status: 'active',       platforms: ['windows'],              urls: { windows: 'https://wearedevs.net/d/Fluxus Z' } },
-            { name: 'LX63',           downloads: '110.7k+',desc: 'The only free keyless 100% UNC executor right now. Fast, secure, powerful, less crashes. Can run every script!',             img: 'https://wearedevs.net/images/thumbnails/lx6-080225.webp',                            wadUrl: 'https://wearedevs.net/d/LX63',           status: 'active',       platforms: ['windows'],              urls: { windows: 'https://wearedevs.net/d/LX63' } },
-            { name: 'Valex',          downloads: '124.1k+',desc: 'Undetected external with aimbot, ESP, kill-all, player exploits, and 24/7 anti-cheat protection.',                           img: 'https://wearedevs.net/images/thumbnails/valex.webp',                                 wadUrl: 'https://wearedevs.net/d/Valex',          status: 'active',       platforms: ['windows'],              urls: { windows: 'https://valex.io/' } },
-            { name: 'Pluto',          downloads: '93.9k+', desc: 'Seamless FREE external. Undetected, overpowered features, aimbot and ESP, game explorer.',                                   img: 'https://obj.wearedevs.net/images/software/pluto/pluto.webp',                         wadUrl: 'https://wearedevs.net/d/Pluto',          status: 'active',       platforms: ['windows'],              urls: { windows: 'https://pluto.ad/' } },
-            { name: 'CheatHub',       downloads: '85.7k+', desc: 'ESP, aimbot, and walkspeed changer. Fully external and undetected!',                                                         img: 'https://obj.wearedevs.net/images/software/general/cheathub-012826.webp',             wadUrl: 'https://wearedevs.net/d/CheatHub',       status: 'active',       platforms: ['windows'],              urls: { windows: 'https://wearedevs.net/d/CheatHub' } },
-            { name: 'Multiple Games', downloads: '21.1m+', desc: 'Usually you are limited to one game open at a time — with this you can open as many as you want.',                           img: 'https://wearedevs.net/images/thumbnails/multiple rbx games.webp',                    wadUrl: 'https://wearedevs.net/d/Multiple Games', status: 'active',       platforms: ['windows'],              urls: { windows: 'https://wearedevs.net/d/Multiple Games' } },
-            { name: 'Bunni',          downloads: '144.5k+',desc: 'Undetected from CM bans! Free keyed Lua executor with high UNC and amazing script compatibility.',                            img: 'https://wearedevs.net/images/thumbnails/bunni-080125.webp',                          wadUrl: 'https://wearedevs.net/d/Bunni',          status: 'discontinued', platforms: ['windows'],              urls: {} },
-            { name: 'Drift',          downloads: '395.7k+',desc: 'Undetected external and executor. Always work.',                                                                              img: 'https://wearedevs.net/images/thumbnails/drift.webp',                                 wadUrl: 'https://wearedevs.net/d/Drift',          status: 'pending',      platforms: ['windows'],              urls: { windows: 'https://wearedevs.net/d/Drift' } },
-            { name: 'Hydrogen',       downloads: '15.9k+', desc: 'Achieves a 96% sUNC score, supporting most scripts, and blocks dangerous functions.',                                        img: 'https://wearedevs.net/images/thumbnails/hydrogen.webp',                              wadUrl: 'https://wearedevs.net/d/Hydrogen',       status: 'pending',      platforms: ['android'],              urls: { android: 'https://hydrogenexecutor.com/download/' } },
-            { name: 'Punk X',         downloads: '25.3k+', desc: 'High-performance executor. Undetected, no lag, stable, & optimized for heavy scripts with strong sUNC & UNC support.',      img: 'https://obj.wearedevs.net/images/software/punkx/punkx-012126.webp',                 wadUrl: 'https://wearedevs.net/d/Punk X',         status: 'discontinued', platforms: ['windows'],              urls: {} },
-            { name: 'Nihon',          downloads: '446.6k+',desc: 'Nihon — Discontinued.',                                                                                                      img: 'https://wearedevs.net/images/thumbnails/nihon-102325.webp',                          wadUrl: 'https://wearedevs.net/d/Nihon',          status: 'discontinued', platforms: ['windows'],              urls: {} },
-            { name: 'Krnl',           downloads: '37.4m+', desc: 'UNDETECTED, 100 sUNC, 24-hour keys, getconnections, saveinstance, and gethiddenproperty. Runs any script!',                img: 'https://wearedevs.net/images/thumbnails/krnl.jpeg',                                  wadUrl: 'https://wearedevs.net/d/Krnl',           status: 'discontinued', platforms: ['windows'],              urls: {} },
-        ];
-
-        let execFilter = 'all';
-        let execSearch = '';
-
-        function renderExecutors() {
-            let list = EXECUTORS;
-
-            if (execFilter !== 'all') list = list.filter(e => e.status === execFilter);
-
-            if (execSearch) {
-                const q = execSearch.toLowerCase();
-                list = list.filter(e =>
-                    e.name.toLowerCase().includes(q) ||
-                    e.desc.toLowerCase().includes(q)
-                );
-            }
-
-            if (!list.length) {
-                executorsContainer.innerHTML = `<div class="empty-state"><h3>No executors found</h3><p>Try a different filter or search term</p></div>`;
-                return;
-            }
-
-            executorsContainer.innerHTML = '';
-            list.forEach((ex, i) => {
-                const statusLabel = { active: '✅ Active', discontinued: '🚫 Discontinued', pending: '⚠️ Pending Fixes' }[ex.status];
-                const canDownload = ex.status !== 'discontinued';
-
-                const platformIcons = {
-                    windows: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.548H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg> Windows`,
-                    android: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/></svg> Android`,
-                    ios: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> iOS`,
-                    mac: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS`,
-                };
-
-                const dlButtons = canDownload
-                    ? ex.platforms.map(p => {
-                        const url = ex.urls[p] || ex.wadUrl;
-                        return `<button class="exec-platform-btn exec-platform-${p}" onclick="window.open('${url}','_blank')">${platformIcons[p] || p}</button>`;
-                      }).join('')
-                    : `<span class="exec-download-btn disabled">Unavailable</span>`;
-
-                const card = document.createElement('div');
-                card.className = `exec-card ${ex.status}`;
-                card.style.animationDelay = `${i * 0.04}s`;
-                card.innerHTML = `
-                    <div class="exec-thumb-wrap">
-                        <img class="exec-thumbnail" src="${ex.img}" alt="${ex.name}" onerror="this.closest('.exec-thumb-wrap').remove()">
-                    </div>
-                    <div class="exec-body">
-                        <div class="exec-status-bar">
-                            <span class="exec-status ${ex.status}">${statusLabel}</span>
-                            <span class="exec-downloads">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                ${ex.downloads}
-                            </span>
-                        </div>
-                        <div class="exec-title">${ex.name}</div>
-                        <div class="exec-desc">${ex.desc}</div>
-                        <div class="exec-platform-btns">${dlButtons}</div>
-                    </div>
-                `;
-                executorsContainer.appendChild(card);
-            });
-        }
-
-        execFilterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                execFilterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                execFilter = btn.dataset.filter;
-                renderExecutors();
-            });
-        });
-
-        execSearchInput.addEventListener('input', () => {
-            execSearch = execSearchInput.value.trim();
-            renderExecutors();
-        });
-    </script>
+    }, 500);
+  </script>
 </body>
 </html>
